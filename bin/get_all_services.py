@@ -251,10 +251,10 @@ def output_all_services(harmony_services: list[dict]) -> None:
     """Write service information to a GitHub environment variable.
 
     This function accesses the GitHub environment file listed at the `GITHUB_OUTPUT`
-    environment variable and saved the Harmony service information as a string
+    environment variable and saves the Harmony service information as a string
     of JSON.
 
-    This JSON will then be accessible to later workflow jobs as steps.
+    This JSON will then be accessible to later workflow jobs or steps.
 
     """
     with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as file_handler:
