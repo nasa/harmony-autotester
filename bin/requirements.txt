@@ -1,0 +1,2 @@
+# Requirements for main workflow identifying all services:
+requests ~= 2.32.3

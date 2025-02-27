@@ -24,6 +24,7 @@ TODO
 |- LICENSE
 |- README.md
 |- dev_requirements.txt
+|- pyproject.toml
 ```
 
 * `.github` contains CI/CD workflows to be executed within the repository. For
@@ -46,6 +47,8 @@ TODO
 * `README.md` is this file.
 * `dev_requirements.txt` contains Pip-installable Python packages that are
   required for local development. For example, `pre-commit`.
+* `pyproject.toml`  is a configuration file used by packaging tools, and other
+  tools such as linters and type checkers.
 
 ## CI/CD workflows:
 
