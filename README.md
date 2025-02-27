@@ -9,7 +9,17 @@ or obviously incorrect output.
 
 ## What the Harmony Autotester does:
 
-TODO
+The Harmony Autotester provides simple, non-rigorous testing of all NASA
+Earth Science collections supported by the [Harmony](https://harmony.earthdata.nasa.gov)
+workflow manager.
+
+All Harmony services are identified using the Common Metadata Repository (CMR),
+and all collections associated with those services are also retrieved. For each
+service, a set of basic tests are executed for all associated services,
+primarily ensuring the request succeeds.
+
+If a test fails for a collection/service pairing, a GitHub issue will be created
+in the repository, to allow for tracking of any related issues.
 
 ## Repository Structure:
 
@@ -24,6 +34,7 @@ TODO
 |- LICENSE
 |- README.md
 |- dev_requirements.txt
+|- pyproject.toml
 ```
 
 * `.github` contains CI/CD workflows to be executed within the repository. For
@@ -46,10 +57,18 @@ TODO
 * `README.md` is this file.
 * `dev_requirements.txt` contains Pip-installable Python packages that are
   required for local development. For example, `pre-commit`.
+* `pyproject.toml`  is a configuration file used by packaging tools, and other
+  tools such as linters and type checkers.
 
 ## CI/CD workflows:
 
-TODO
+These are found in the `.github/workflows` directory:
+
+- `test_all_associated_collections.yaml` contains the main workflow for the
+  Harmony Autotester, which is triggered on a nightly schedule. This workflow
+  uses CMR to identify all Harmony services and their associated collections,
+  before triggering the appropriate test suite to run for all collections
+  associated with a particular service.
 
 ## Releasing:
 

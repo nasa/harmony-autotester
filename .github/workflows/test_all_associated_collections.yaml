@@ -1,0 +1,54 @@
+# This workflow will be executed when a full execution of all
+# collections associated with all collections should be performed.
+name: Full Harmony Autotester run
+
+on:
+  schedule:
+    # Currently scheduled every morning at 2:05am.
+    - cron: "5 2 * * *"
+
+jobs:
+  identify_all_services:
+    runs-on: ubuntu-latest
+    environment: production
+    name: Identify All Harmony Services
+    outputs:
+      all_services: "${{ steps.find_all_services.outputs.all_services }}"
+
+    steps:
+      - name: Checkout nasa/harmony-autotester repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12 environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r bin/requirements.txt
+
+      - name: Find all services and associated collections
+        id: "find_all_services"
+        run: |
+          python bin/get_all_services.py
+        env:
+          CMR_GRAPHQL_URL: ${{ vars.CMR_GRAPHQL_URL }}
+          EDL_URL: ${{ vars.EDL_URL }}
+          EDL_USER: ${{ secrets.EDL_USER }}
+          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+
+  test_all_services:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: identify_all_services
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.identify_all_services.outputs.all_services) }}
+    name: ${{ matrix.service.name }}
+
+    steps:
+      - name: Placeholder to prove matrix is working
+        run: |
+          echo "${{ matrix.service.name }} is ${{ matrix.service.concept_id }}"
