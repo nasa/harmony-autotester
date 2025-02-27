@@ -11,6 +11,7 @@ jobs:
   identify_all_services:
     runs-on: ubuntu-latest
     environment: production
+    name: Identify All Harmony Services
     outputs:
       all_services: "${{ steps.find_all_services.outputs.all_services }}"
 
