@@ -1,24 +1,21 @@
-"""A module to retrieve the directory containing tests to run for a given service.
+"""A module to retrieve the test directory for a given service.
 
-The resulting directory will be written to GitHub environment variables as
-`test_directory`. If there is no available test suite for the specified UMM-S
+The directory name will be written to the GitHub workflow environment variables
+as `test_directory`. If there is no available test suite for the specified UMM-S
 record, this module will not create an environment variable.
 
-To enable a test suite to be run, please add to the `PRODUCTION_SERVICE_MAPPING`
-and/or `UAT_SERVICE_MAPPING` as appropriate.
+To enable a test suite to be run, please add items to the files specified via
+`PRODUCTION_SERVICE_MAPPING` and/or `UAT_SERVICE_MAPPING` as appropriate.
 
 See `README.md` for full guidance on configuring a set of tests for a service.
 
 """
 
+import json
 import os
 
-PRODUCTION_SERVICE_MAPPING = {
-    'S2697183066-XYZ_PROV': 'tests/hybig',
-}
-UAT_SERVICE_MAPPING = {
-    'S1257776354-EEDTEST': 'tests/hybig',
-}
+PRODUCTION_SERVICE_MAPPING = 'bin/production_service_mapping.json'
+UAT_SERVICE_MAPPING = 'bin/uat_service_mapping.json'
 
 
 def get_service_test_directory(service_concept_id: str) -> str | None:
@@ -26,9 +23,12 @@ def get_service_test_directory(service_concept_id: str) -> str | None:
     earthdata_environment = os.environ.get('EARTHDATA_ENVIRONMENT')
 
     if earthdata_environment == 'UAT':
-        service_mapping = UAT_SERVICE_MAPPING
+        mapping_file_path = UAT_SERVICE_MAPPING
     else:
-        service_mapping = PRODUCTION_SERVICE_MAPPING
+        mapping_file_path = PRODUCTION_SERVICE_MAPPING
+
+    with open(mapping_file_path, encoding='utf-8') as mapping_file:
+        service_mapping = json.load(mapping_file)
 
     return service_mapping.get(service_concept_id)
 
@@ -44,5 +44,5 @@ if __name__ == '__main__':
     service_concept_id = os.environ.get('SERVICE_CONCEPT_ID')
     service_test_directory = get_service_test_directory(service_concept_id)
 
-    if service_test_directory is not None:
+    if service_test_directory:
         output_service_test_directory(service_test_directory)

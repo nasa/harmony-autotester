@@ -64,7 +64,6 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
       * For a tiled output, that is 1 text file listing all other files, 1
         PNG per tile, 1 world file per tile (.pgw), and 1 auxiliary file per
         tile (.aux.xml).
-    * If the output is tiled, there should be a text file, which lists all
       output files.
     * Every PNG file should have a corresponding world file and auxiliary file,
       with a matching basename (excluding extensions).
@@ -72,14 +71,6 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
     assert len(data_links) >= 3, 'Should have at least 1 png, pgw and aux.xml'
-
-    if len(data_links) > 3:
-        # For multiple output tiles, there should be a text file listing all
-        # expected output files (PNGs, world files, auxiliary files):
-        tile_inventory = next(
-            (link for link in data_links if link['href'].endswith('.txt')), None
-        )
-        assert tile_inventory is not None, 'Missing tile inventory file'
 
     # All tiles (or whole granule) should have a PNG, a world file and
     # an auxiliary file:

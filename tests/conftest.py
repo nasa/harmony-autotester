@@ -22,7 +22,7 @@ environment_mapping = {
 
 
 @pytest.fixture(
-    params=json.loads(os.environ.get('SERVICE_COLLECTIONS', [])),
+    params=json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]')),
     scope='session',
 )
 def service_collection(request):

@@ -86,10 +86,11 @@ For an example test directory, see `tests/hybig`:
 
 Once a test directory has been created, the GitHub workflow that runs every
 night will need to be aware of it. To enable the tests, update the mappings in
-`bin/get_service_test_file.py` to include the UMM-S concept ID and the name of
-the new test directory. The UMM-S concept ID is used as it is immutable. It is
-possible to also configure tests only for either UAT or production by only
-including information for the test file in the appropriate mapping.
+`bin/production_service_mapping.json` and/or `bin/uat_service_mapping.json` to
+include the UMM-S concept ID and the name of the new test directory. The UMM-S
+concept ID is used as it is immutable. It is possible to also configure tests
+only for either UAT or production by only including information for the test
+directory in the appropriate mapping.
 
 ### Managing dependencies:
 
