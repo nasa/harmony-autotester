@@ -4,7 +4,9 @@ Modules in the test suite subdirectories will have access to this
 conftest.py, which sets up common functionality for:
 
 * A Harmony Client.
-*
+* The list of collections associated with the service under test.
+* A cache for test failures, to be written out at the end of testing.
+
 """
 
 import json
