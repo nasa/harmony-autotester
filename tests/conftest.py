@@ -19,18 +19,13 @@ environment_mapping = {
 }
 
 
-def pytest_generate_tests(metafunc):
-    """Workaround to parametrize pytest functions dynamically.
-
-    This will recognise if the service_collection fixture is included in
-    the test function. If so, the `SERVICE_COLLECTIONS` environment variable
-    will be parsed into JSON, creating a list of collection objects. The
-    test will then be parametrised to run over each element.
-
-    """
-    if 'service_collection' in metafunc.fixturenames:
-        service_collections = json.loads(os.environ.get('SERVICE_COLLECTIONS', []))
-        metafunc.parametrize('service_collection', service_collections)
+@pytest.fixture(
+    params=json.loads(os.environ.get('SERVICE_COLLECTIONS', [])),
+    scope='session',
+)
+def service_collection(request):
+    """Fixture to parametrize tests to iterate over associated collections."""
+    return request.param
 
 
 @pytest.fixture(scope='session')
