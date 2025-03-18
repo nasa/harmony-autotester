@@ -35,8 +35,8 @@ def get_service_test_directory(service_concept_id: str) -> str | None:
 
 def output_service_test_directory(service_test_directory: str) -> None:
     """Write name of service test directory to an environment variable."""
-    with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as file_handler:
-        print(f'test_directory={service_test_directory}', file=file_handler)
+    with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as env_file:
+        print(f'test_directory={service_test_directory}', file=env_file)
 
 
 if __name__ == '__main__':
