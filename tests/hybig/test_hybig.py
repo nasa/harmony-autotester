@@ -64,7 +64,6 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
       * For a tiled output, that is 1 text file listing all other files, 1
         PNG per tile, 1 world file per tile (.pgw), and 1 auxiliary file per
         tile (.aux.xml).
-      output files.
     * Every PNG file should have a corresponding world file and auxiliary file,
       with a matching basename (excluding extensions).
 
