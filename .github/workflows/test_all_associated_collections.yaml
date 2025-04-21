@@ -47,6 +47,9 @@ jobs:
       matrix:
         service: ${{ fromJson(needs.identify_all_services.outputs.all_services) }}
     name: ${{ matrix.service.name }}
+    permissions:
+      # Ensure workflow can create or update GitHub issues
+      issues: write
 
     steps:
       - name: Checkout nasa/harmony-autotester repository
@@ -84,6 +87,12 @@ jobs:
           SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}
           TEST_DIRECTORY: ${{ steps.find_test_directory.outputs.test_directory }}
 
-      # To be done in TRT-629
-      # - name: Create or update GitHub issues for each failed collection
-      #   if: ${{ steps.find_test_directory.outputs.test_directory != '' }}
+      - name: Create or update GitHub issues for each failed collection
+        if: ${{ steps.find_test_directory.outputs.test_directory != '' }}
+        run: |
+          python bin/update_github_issues.py
+        env:
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SERVICE_NAME: ${{ matrix.service.name }}
+          TEST_DIRECTORY:  ${{ steps.find_test_directory.outputs.test_directory }}
