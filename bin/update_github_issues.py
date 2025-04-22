@@ -68,7 +68,7 @@ def update_github_issue_body(
         ),
         headers={
             'Accept': 'application/vnd.github+json',
-            'Authorization': f'token {github_token}',
+            'Authorization': f'Bearer {github_token}',
         },
         data={'body': issue_body},
         timeout=10,
@@ -168,6 +168,11 @@ def create_or_update_failure_github_issue(
             },
             timeout=10,
         )
+        if not creation_response.ok:
+            print(creation_response.url)
+            print(creation_response.request.body)
+            print(creation_response.request.headers)
+
         creation_response.raise_for_status()
     else:
         # Update existing issue body stating most recent failure date
