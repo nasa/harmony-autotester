@@ -70,7 +70,7 @@ def update_github_issue_body(
             'Accept': 'application/vnd.github+json',
             'Authorization': f'token {github_token}',
         },
-        params={'body': issue_body},
+        data={'body': issue_body},
         timeout=10,
     )
     update_response.raise_for_status()
@@ -161,7 +161,7 @@ def create_or_update_failure_github_issue(
                 'Accept': 'application/vnd.github+json',
                 'Authorization': f'token {github_token}',
             },
-            params={
+            data={
                 'title': f'{service_label} - {collection_label}',
                 'body': get_new_issue_body(failure_information['error']),
                 'labels': [collection_label, service_label],
