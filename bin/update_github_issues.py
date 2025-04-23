@@ -62,15 +62,12 @@ def update_github_issue_body(
 ):
     """Publish an updated GitHub issue that only amends its body."""
     update_response = requests.patch(
-        (
-            f'https://api.github.com/repos/nasa/{github_repository}'
-            f'/issues/{issue_number}'
-        ),
+        f'https://api.github.com/repos/{github_repository}/issues/{issue_number}',
         headers={
             'Accept': 'application/vnd.github+json',
-            'Authorization': f'token {github_token}',
+            'Authorization': f'Bearer {github_token}',
         },
-        params={'body': issue_body},
+        json={'body': issue_body},
         timeout=10,
     )
     update_response.raise_for_status()
@@ -159,9 +156,9 @@ def create_or_update_failure_github_issue(
             f'https://api.github.com/repos/{github_repository}/issues',
             headers={
                 'Accept': 'application/vnd.github+json',
-                'Authorization': f'token {github_token}',
+                'Authorization': f'Bearer {github_token}',
             },
-            params={
+            json={
                 'title': f'{service_label} - {collection_label}',
                 'body': get_new_issue_body(failure_information['error']),
                 'labels': [collection_label, service_label],
@@ -237,7 +234,7 @@ def collection_passed_service_tests(
 
     for test_failure in test_failures:
         collection_label = get_collection_label(test_failure)
-        if any(label['name'] == collection_label for label in service_issue):
+        if any(label['name'] == collection_label for label in service_issue['labels']):
             matching_test_failure = True
 
     return not matching_test_failure
