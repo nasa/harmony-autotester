@@ -168,10 +168,6 @@ def create_or_update_failure_github_issue(
             },
             timeout=10,
         )
-        if not creation_response.ok:
-            print(creation_response.url)
-            print(creation_response.request.body)
-            print(creation_response.request.headers)
 
         creation_response.raise_for_status()
     else:
@@ -242,7 +238,7 @@ def collection_passed_service_tests(
 
     for test_failure in test_failures:
         collection_label = get_collection_label(test_failure)
-        if any(label['name'] == collection_label for label in service_issue):
+        if any(label['name'] == collection_label for label in service_issue['labels']):
             matching_test_failure = True
 
     return not matching_test_failure
