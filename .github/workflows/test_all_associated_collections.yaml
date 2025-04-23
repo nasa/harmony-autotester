@@ -88,7 +88,7 @@ jobs:
           TEST_DIRECTORY: ${{ steps.find_test_directory.outputs.test_directory }}
 
       - name: Create or update GitHub issues for each failed collection
-        if: ${{ steps.find_test_directory.outputs.test_directory != '' }}
+        if: ${{ steps.find_test_directory.outputs.test_directory != '' && failure() && steps.run_test_suite.conclusion == 'failure' }}
         run: |
           python bin/update_github_issues.py
         env:
