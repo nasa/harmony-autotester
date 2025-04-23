@@ -63,7 +63,7 @@ def update_github_issue_body(
     """Publish an updated GitHub issue that only amends its body."""
     update_response = requests.patch(
         (
-            f'https://api.github.com/repos/nasa/{github_repository}'
+            f'https://api.github.com/repos/{github_repository}'
             f'/issues/{issue_number}'
         ),
         headers={
