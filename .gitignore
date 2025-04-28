@@ -12,3 +12,6 @@ __pycache__/
 
 # vim open files
 **.swp
+
+# Test artefacts
+**test_output.json

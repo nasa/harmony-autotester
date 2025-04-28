@@ -178,7 +178,7 @@ def create_or_update_failure_github_issue(
             f'https://api.github.com/repos/{github_repository}/issues',
             headers={
                 'Accept': 'application/vnd.github+json',
-                'Authorization': f'token {github_token}',
+                'Authorization': f'Bearer {github_token}',
             },
             json={
                 'title': f'{service_label} - {collection_label}',
