@@ -333,7 +333,7 @@ def create_or_update_issue_comment(
         comment_response = requests.patch(
             (
                 f'https://api.github.com/repos/{github_repository}/issues'
-                f'/{service_issue_number}/comments/{comment_id}'
+                f'/comments/{comment_id}'
             ),
             headers={
                 'Accept': 'application/vnd.github+json',
@@ -344,10 +344,7 @@ def create_or_update_issue_comment(
     else:
         # Create a new comment:
         comment_response = requests.post(
-            (
-                f'https://api.github.com/repos/{github_repository}/issues'
-                f'/{service_issue_number}/comments'
-            ),
+            'https://api.github.com/repos/{github_repository}/issues/comments',
             headers={
                 'Accept': 'application/vnd.github+json',
                 'Authorization': f'token {github_token}',
