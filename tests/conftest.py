@@ -1,4 +1,4 @@
-"""Test fixtures to be re-used for different test suites.
+"""Test fixtures and classes to be re-used for different test suites.
 
 Modules in the test suite subdirectories will have access to this
 conftest.py, which sets up common functionality for:
@@ -13,12 +13,22 @@ import json
 import os
 
 import pytest
-from harmony import Client, Environment
+from harmony import Client, Environment, Request
 
 environment_mapping = {
     'production': Environment.PROD,
     'UAT': Environment.UAT,
 }
+
+
+class AutotesterRequest(Request):
+    """Child class of harmony-py Requests adding harmony-autotester label."""
+
+    def __init__(self, **kwargs):
+        """Propagate kwargs and add a "harmony-autotester" label."""
+        labels = kwargs.get('labels', [])
+        labels.append('harmony-autotester')
+        super().__init__(**kwargs, labels=labels)
 
 
 @pytest.fixture(

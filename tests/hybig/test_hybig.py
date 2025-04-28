@@ -2,7 +2,9 @@
 
 from os.path import basename
 
-from harmony import Collection, Request
+from harmony import Collection
+
+from tests.conftest import AutotesterRequest
 
 
 def test_hybig(failed_tests, harmony_client, service_collection):
@@ -17,7 +19,7 @@ def test_hybig(failed_tests, harmony_client, service_collection):
     fixtures common to all Harmony services under test.
 
     """
-    harmony_request = Request(
+    harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
         max_results=1,
         format='image/png',
@@ -30,7 +32,7 @@ def test_hybig(failed_tests, harmony_client, service_collection):
 
         # Check the response was successful
         assert result_json['status'] == 'successful', (
-            f'Harmony request failed: {result_json["message"]}'
+            f'Harmony request failed:\n\n{result_json["message"]}'
         )
 
         # Check the URLs for results are all of the expected type.
@@ -41,6 +43,7 @@ def test_hybig(failed_tests, harmony_client, service_collection):
             {
                 **service_collection,
                 'error': str(exception),
+                'url': harmony_client.request_as_url(harmony_request),
             }
         )
         raise

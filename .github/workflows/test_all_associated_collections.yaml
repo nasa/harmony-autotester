@@ -6,6 +6,7 @@ on:
   schedule:
     # Currently scheduled every morning at 2:05am.
     - cron: "5 2 * * *"
+  workflow_dispatch:
 
 jobs:
   identify_all_services:
@@ -87,12 +88,23 @@ jobs:
           SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}
           TEST_DIRECTORY: ${{ steps.find_test_directory.outputs.test_directory }}
 
-      - name: Create or update GitHub issues for each failed collection
-        if: ${{ steps.find_test_directory.outputs.test_directory != '' && failure() && steps.run_test_suite.conclusion == 'failure' }}
+      - name: Create or update GitHub issues for collections with updated results
+        # This step runs even if there are no failures, because some collections
+        # may have previously failed, but now succeed (or have be disassociated)
+        if: ${{ steps.find_test_directory.outputs.test_directory != ''  && !cancelled() }}
         run: |
           python bin/update_github_issues.py
         env:
+          EARTHDATA_ENVIRONMENT: ${{ vars.EARTHDATA_ENVIRONMENT }}
           GH_REPOSITORY: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}
           SERVICE_NAME: ${{ matrix.service.name }}
           TEST_DIRECTORY:  ${{ steps.find_test_directory.outputs.test_directory }}
+
+      - name: Save test outputs for failures
+        if: ${{ steps.find_test_directory.outputs.test_directory != '' && failure() && steps.run_test_suite.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service.name }}
+          path: ${{ steps.find_test_directory.outputs.test_directory }}/test_output.json
