@@ -1,17 +1,20 @@
 # This workflow will be executed when a full execution of all
 # collections associated with all collections should be performed.
+# The environment to run against will be either production or UAT, and is
+# a required parameter of the workflow_call trigger.
 name: Full Harmony Autotester run
 
 on:
-  schedule:
-    # Currently scheduled every morning at 2:05am.
-    - cron: "5 2 * * *"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      harmony_environment:
+        required: true
+        type: string
 
 jobs:
   identify_all_services:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ inputs.harmony_environment }}
     name: Identify All Harmony Services
     outputs:
       all_services: "${{ steps.find_all_services.outputs.all_services }}"
@@ -42,7 +45,7 @@ jobs:
 
   test_all_services:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ inputs.harmony_environment }}
     needs: identify_all_services
     strategy:
       matrix:
