@@ -17,3 +17,6 @@ jobs:
       ./.github/workflows/test_all_associated_collections.yaml
     with:
       harmony_environment: uat
+    secrets:
+      edl_user: ${{ secrets.UAT_EDL_USER }}
+      edl_password: ${{ secrets.UAT_EDL_PASSWORD }}

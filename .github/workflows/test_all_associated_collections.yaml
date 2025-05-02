@@ -10,6 +10,11 @@ on:
       harmony_environment:
         required: true
         type: string
+    secrets:
+      edl_user:
+        required: true
+      edl_password:
+        required: true
 
 jobs:
   identify_all_services:
@@ -40,8 +45,8 @@ jobs:
         env:
           CMR_GRAPHQL_URL: ${{ vars.CMR_GRAPHQL_URL }}
           EDL_URL: ${{ vars.EDL_URL }}
-          EDL_USER: ${{ secrets.EDL_USER }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          EDL_USER: ${{ secrets.edl_user }}
+          EDL_PASSWORD: ${{ secrets.edl_password }}
 
   test_all_services:
     runs-on: ubuntu-latest
@@ -86,8 +91,8 @@ jobs:
           pytest ${{ steps.find_test_directory.outputs.test_directory }}/
         env:
           EARTHDATA_ENVIRONMENT: ${{ vars.EARTHDATA_ENVIRONMENT }}
-          EDL_USER: ${{ secrets.EDL_USER }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          EDL_USER: ${{ secrets.edl_user }}
+          EDL_PASSWORD: ${{ secrets.edl_password }}
           SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}
           TEST_DIRECTORY: ${{ steps.find_test_directory.outputs.test_directory }}
 
