@@ -1,0 +1,22 @@
+# This workflow will trigger all tests to be executed using the production
+# environment for Harmony, Earthdata Login and CMR.
+name: Production Harmony Autotester execution
+
+on:
+  schedule:
+    # Currently scheduled every morning at 4:05am UTC.
+    - cron: "5 4 * * *"
+
+jobs:
+  run_production_tests:
+    name: Production Harmony Autotester execution
+    permissions:
+      # Ensure invoked workflow can create or update GitHub issues
+      issues: write
+    uses:
+      ./.github/workflows/test_all_associated_collections.yaml
+    with:
+      harmony_environment: production
+    secrets:
+      edl_user: ${{ secrets.PROD_EDL_USER }}
+      edl_password: ${{ secrets.PROD_EDL_PASSWORD }}

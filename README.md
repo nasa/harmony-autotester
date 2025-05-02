@@ -66,7 +66,8 @@ in the repository, to allow for tracking of any related issues.
 ## What happens during a workflow run?
 
 Every night, [a workflow](https://github.com/nasa/harmony-autotester/blob/main/.github/workflows/test_all_associated_collections.yaml)
-is executed. This workflow:
+is executed. It will be invoked twice: once for production and once for UAT.
+This workflow:
 
 * Queries CMR GraphQL to discover all  services with a type of "harmony".
   Basic service information is retrieved, along with key fields for every

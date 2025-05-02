@@ -1,0 +1,22 @@
+# This workflow will trigger all tests to be executed using the UAT environment
+# for Harmony, Earthdata Login and CMR.
+name: UAT Harmony Autotester execution
+
+on:
+  schedule:
+    # Currently scheduled every morning at 3:05am UTC.
+    - cron: "5 3 * * *"
+
+jobs:
+  run_production_tests:
+    name: UAT Harmony Autotester execution
+    permissions:
+      # Ensure invoked workflow can create or update GitHub issues
+      issues: write
+    uses:
+      ./.github/workflows/test_all_associated_collections.yaml
+    with:
+      harmony_environment: uat
+    secrets:
+      edl_user: ${{ secrets.UAT_EDL_USER }}
+      edl_password: ${{ secrets.UAT_EDL_PASSWORD }}
