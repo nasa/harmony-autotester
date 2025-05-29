@@ -1,0 +1,5 @@
+# Packages required to run the pytest suite for net2cog:
+# First install packages used by all tests:
+-r ../common_requirements.txt
+# Then add requirements specific to this test suite:
+# None currently needed for net2cog
