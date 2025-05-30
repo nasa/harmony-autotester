@@ -4,6 +4,15 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.2.0] - 2025-05-29
+
+### Added:
+
+- TRT-570 - Added tests for the [net2cog service](https://github.com/podaac/net2cog).
+  These tests will ensure a request returns a successful status for a collection,
+  and then check that all output files have the expected suffix on their output
+  names: `_reformatted.tif`.
+
 ## [v1.1.0] - 2025-05-01
 
 ### Changed:
@@ -24,6 +33,7 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.2.0...HEAD
+[v1.2.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.0
 [v1.1.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.1.0
 [v1.0.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.0.0
