@@ -53,6 +53,7 @@ jobs:
     environment: ${{ inputs.harmony_environment }}
     needs: identify_all_services
     strategy:
+      fail-fast: false
       matrix:
         service: ${{ fromJson(needs.identify_all_services.outputs.all_services) }}
     name: ${{ matrix.service.name }}
