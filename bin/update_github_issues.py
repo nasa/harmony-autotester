@@ -344,7 +344,10 @@ def create_or_update_issue_comment(
     else:
         # Create a new comment:
         comment_response = requests.post(
-            f'https://api.github.com/repos/{github_repository}/issues/comments',
+            (
+                f'https://api.github.com/repos/{github_repository}'
+                f'/issues/{service_issue_number}/comments'
+            ),
             headers={
                 'Accept': 'application/vnd.github+json',
                 'Authorization': f'token {github_token}',
