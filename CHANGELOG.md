@@ -4,6 +4,12 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.2.1] - 2025-06-04
+
+### Changed:
+
+- TRT-570 - Updated URL to create new comments on a GitHub issue.
+
 ## [v1.2.0] - 2025-05-29
 
 ### Added:
@@ -33,7 +39,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.2.1...HEAD
+[v1.2.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.1
 [v1.2.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.0
 [v1.1.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.1.0
 [v1.0.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.0.0
