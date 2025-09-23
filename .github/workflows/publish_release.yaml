@@ -24,7 +24,9 @@ jobs:
 
     steps:
       - name: Checkout nasa/harmony-autotester repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Extract semantic version number
         run: echo "SEMANTIC_VERSION=$(cat version.txt)" >> $GITHUB_ENV

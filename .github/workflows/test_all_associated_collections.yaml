@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout nasa/harmony-autotester repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python 3.12 environment
         uses: actions/setup-python@v5
