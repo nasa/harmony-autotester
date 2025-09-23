@@ -21,10 +21,6 @@ LINK_PATTERN="^\[.*\]:.*https://github.com/nasa"
 # VERSION_PATTERN
 result=$(awk "/$VERSION_PATTERN/{c++; if(c==2) exit;} c==1" "$CHANGELOG_FILE")
 
-# Print the result
-echo "$result" |  grep -v "$VERSION_PATTERN" | grep -v "$LINK_PATTERN"
-
-
 # Get all commit messages since the last release (marked with a git tag). If
 # there are no tags, get the full commit history of the repository.
 if [[ $(git tag) ]]
