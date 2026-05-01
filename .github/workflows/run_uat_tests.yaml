@@ -3,9 +3,7 @@
 name: UAT Harmony Autotester execution
 
 on:
-  schedule:
-    # Currently scheduled every morning at 3:05am UTC.
-    - cron: "5 3 * * *"
+  workflow_dispatch:
 
 jobs:
   run_production_tests:
