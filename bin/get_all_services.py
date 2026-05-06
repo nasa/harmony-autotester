@@ -146,7 +146,7 @@ def get_service_collections(
             print(f'response status code: f{cmr_graph_response.status_code}')
             print(f'response : {cmr_graph_response.content}')
 
-    return collections[:2]
+    return collections[:10]
 
 
 def get_all_harmony_services(
