@@ -21,6 +21,7 @@ def test_sambah(failed_tests, harmony_client, service_collection):
     harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
         max_results=1,
+        extend=True,
         format='text/csv',
     )
 
