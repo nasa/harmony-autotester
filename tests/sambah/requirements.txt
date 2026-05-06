@@ -1,0 +1,6 @@
+# Packages required to run the pytest suite for sambah:
+# First install packages used by all tests:
+-r ../common_requirements.txt
+# Then add requirements specific to this test suite:
+batchee>=1.52
+earthaccess>=0.17.0
