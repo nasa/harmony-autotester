@@ -3,4 +3,3 @@
 -r ../common_requirements.txt
 # Then add requirements specific to this test suite:
 batchee>=1.5.2
-earthaccess>=0.17.0
