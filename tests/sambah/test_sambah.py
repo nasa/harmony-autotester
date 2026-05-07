@@ -1,13 +1,13 @@
 """pytest suite for Harmony net2cog converter."""
 
-from harmony import Collection
+from harmony import Collection, BBox
 import earthaccess
 
 from tests.conftest import AutotesterRequest
-
+from batchee.tempo_filename_parser import get_batch_indices
 
 def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_login):
-    """Run a request against net2cog and make sure it is successful.
+    """Run a request against sambah and make sure it is successful.
 
     As a lightweight example, this test will check the Harmony request
     returned a successful status and the output STAC contains only expected
@@ -21,19 +21,26 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
 
     granules = earthaccess.search_data(
         collection_concept_id=service_collection['concept_id'],
-        count=1000
+        count=100
     )
+    granule_names = [granule['meta']['native-id'] for granule in granules]
+    batch_indices = get_batch_indices(granule_names)
 
+    grouped: dict[int, list] = {}
+    for k, v in zip(batch_indices, granules, strict=False):
+        grouped.setdefault(k, []).append(v)
 
-    # grouped: dict[int, list[Item]] = {}
-    # for k, v in zip(batch_indices, items, strict=False):
-    #     grouped.setdefault(k, []).append(v)
+    scans = sorted(grouped.values(), key=len)
+    selected_granules = scans[-2] + scans[-1]
+    granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
 
     harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
         max_results=10,
         extend=True,
-        concatenate=True
+        concatenate=True,
+        spatial = BBox(-180,-90,180,90),
+        granule_id=granule_id
     )
 
     try:
