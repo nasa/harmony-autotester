@@ -140,7 +140,6 @@ def get_service_collections(
             # Update the cursor for paginated requests
             cursor = json_data['data']['service']['collections']['cursor']
             request_json['variables']['collectionsParams']['cursor'] = cursor
-            break
         else:
             error_count += 1
             print(f'response status code: f{cmr_graph_response.status_code}')
