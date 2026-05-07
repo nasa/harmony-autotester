@@ -23,7 +23,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         collection_concept_id=service_collection['concept_id'],
         count=100
     )
-    assert len(granules) > 0, 'The collection has no granules'
+    assert granules, 'The collection has no granules'
 
     granule_names = [granule['meta']['native-id'] for granule in granules]
     batch_indices = get_batch_indices(granule_names)
@@ -33,6 +33,8 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         grouped.setdefault(k, []).append(v)
 
     scans = sorted(grouped.values(), key=len)
+    assert scans, 'No compatible scans were found'
+
     if len(scans) > 1:
         # Select 1 granule from one scan and up to 2 from another scan
         selected_granules = scans[-2][:1] + scans[-1][:2]
