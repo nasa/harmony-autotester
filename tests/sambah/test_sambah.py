@@ -57,7 +57,6 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
-            max_results=10,
             extend=True,
             concatenate=True,
             spatial = BBox(west, south, east, north),

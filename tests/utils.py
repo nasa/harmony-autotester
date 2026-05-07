@@ -52,7 +52,7 @@ def get_bounding_box(granule):
     return west, east, south, north
 
 def generate_near_full_spatial_box(granules):
-    """Return the bounding box enclosing all given granules."""
+    """Return the near-full bounding box for spatial subsetting tests."""
     boxes = [get_bounding_box(granule) for granule in granules]
 
     # Reduce each granule bounding box by 5% on every side
@@ -83,7 +83,7 @@ def get_temporal_range(granule):
     return start_time, end_time
 
 def generate_near_full_temporal_range(granules):
-    """Return the temporal range to include all given granules."""
+    """Return the near-full temporal range for temporal subsetting tests."""
     umm_times = [get_temporal_range(granule) for granule in granules]
 
     obj_times = [
@@ -101,6 +101,7 @@ def generate_near_full_temporal_range(granules):
         )
         for start_time, end_time in obj_times
     ]
-    start_time = min(reduced_times)
-    end_time = max(reduced_times)
+    start_time = min(start_time for start_time, end_time in reduced_times)
+    end_time = max(end_time for start_time, end_time in reduced_times)
+
     return start_time, end_time
