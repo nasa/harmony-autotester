@@ -16,3 +16,8 @@ convention = "google"
 [[tool.mypy.overrides]]
 module = "harmony_service_lib.*"
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::FutureWarning:earthaccess.results",
+]
