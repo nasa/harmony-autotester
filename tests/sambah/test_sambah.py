@@ -1,10 +1,15 @@
 """pytest suite for Harmony sambah converter."""
 
+
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
 from harmony import BBox, Collection
 
 from tests.conftest import AutotesterRequest
+from tests.utils import (
+    generate_near_full_spatial_box,
+    generate_near_full_temporal_range,
+)
 
 
 def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_login):
@@ -47,12 +52,19 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
 
         granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
 
+        west, east, south, north = generate_near_full_spatial_box(selected_granules)
+        start_time, stop_time = generate_near_full_temporal_range(selected_granules)
+
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
             max_results=10,
             extend=True,
             concatenate=True,
-            spatial = BBox(-180,-90,180,90),
+            spatial = BBox(west, south, east, north),
+            temporal = {
+                "start": start_time,
+                "stop": stop_time
+            },
             granule_id=granule_id
         )
 
