@@ -3,7 +3,7 @@
 
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
-from harmony import BBox, Collection, CapabilitiesRequest
+from harmony import BBox, CapabilitiesRequest, Collection
 
 from tests.conftest import AutotesterRequest
 from tests.utils import (
@@ -55,11 +55,15 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         west, east, south, north = generate_near_full_spatial_box(selected_granules)
         start_time, stop_time = generate_near_full_temporal_range(selected_granules)
 
-        cap_request = CapabilitiesRequest(collection_id=service_collection['concept_id'])
+        cap_request = CapabilitiesRequest(
+            collection_id=service_collection['concept_id']
+        )
         capabilities = harmony_client.submit(cap_request)
         if 'variables' in capabilities:
             # remove one of the variables for variable subsetting test
-            selected_variables = [item['name'] for item in capabilities['variables']][:-1]
+            selected_variables = [
+                item['name'] for item in capabilities['variables']
+            ][:-1]
         else:
             selected_variables = ['all']
 
