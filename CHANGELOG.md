@@ -4,7 +4,12 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [vX.Y.Z] - 2025-09-23
+## [vX.Y.Z] - 2026-05-07
+
+### Fixed:
+
+- Fixes incorrect access in net2cog test to the filename from the Harmony result JSON
+  by requesting the correct key from the result dictionary.
 
 ### Changed:
 
