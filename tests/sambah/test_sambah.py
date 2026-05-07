@@ -1,4 +1,4 @@
-"""pytest suite for Harmony net2cog converter."""
+"""pytest suite for Harmony sambah converter."""
 
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
@@ -19,41 +19,43 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
     fixtures common to all Harmony services under test.
 
     """
-    granules = earthaccess.search_data(
-        collection_concept_id=service_collection['concept_id'],
-        count=100
-    )
-    assert granules, 'The collection has no granules'
-
-    granule_names = [granule['meta']['native-id'] for granule in granules]
-    batch_indices = get_batch_indices(granule_names)
-
-    grouped: dict[int, list] = {}
-    for k, v in zip(batch_indices, granules, strict=False):
-        grouped.setdefault(k, []).append(v)
-
-    scans = sorted(grouped.values(), key=len)
-    assert scans, 'No compatible scans were found'
-
-    if len(scans) > 1:
-        # Select 1 granule from one scan and up to 2 from another scan
-        selected_granules = scans[-2][:1] + scans[-1][:2]
-    else:
-        # Only one scan available; select up to 2 granules
-        selected_granules = scans[-1][:2]
-
-    granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
-
-    harmony_request = AutotesterRequest(
-        collection=Collection(id=service_collection['concept_id']),
-        max_results=10,
-        extend=True,
-        concatenate=True,
-        spatial = BBox(-180,-90,180,90),
-        granule_id=granule_id
-    )
-
     try:
+        harmony_request = None
+
+        granules = earthaccess.search_data(
+            collection_concept_id=service_collection['concept_id'],
+            count=100
+        )
+        assert granules, 'The collection has no granules'
+
+        granule_names = [granule['meta']['native-id'] for granule in granules]
+        batch_indices = get_batch_indices(granule_names)
+
+        grouped: dict[int, list] = {}
+        for k, v in zip(batch_indices, granules, strict=False):
+            grouped.setdefault(k, []).append(v)
+
+        scans = sorted(grouped.values(), key=len)
+        assert scans, 'No compatible scans were found'
+
+        if len(scans) > 1:
+            # Select 1 granule from one scan and up to 2 from another scan
+            selected_granules = scans[-2][:1] + scans[-1][:2]
+        else:
+            # Only one scan available; select up to 2 granules
+            selected_granules = scans[-1][:2]
+
+        granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
+
+        harmony_request = AutotesterRequest(
+            collection=Collection(id=service_collection['concept_id']),
+            max_results=10,
+            extend=True,
+            concatenate=True,
+            spatial = BBox(-180,-90,180,90),
+            granule_id=granule_id
+        )
+
         # Submit the job and get the JSON output once completed
         harmony_job_id = harmony_client.submit(harmony_request)
         result_json = harmony_client.result_json(harmony_job_id)
@@ -67,11 +69,17 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         ensure_correct_files_created(result_json['links'])
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
+        url = (
+            "Not relevant"
+            if harmony_request is None
+            else harmony_client.request_as_url(harmony_request)
+        )
+
         failed_tests.append(
             {
                 **service_collection,
                 'error': str(exception),
-                'url': harmony_client.request_as_url(harmony_request),
+                'url': url,
             }
         )
         raise
