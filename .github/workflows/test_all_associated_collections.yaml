@@ -45,6 +45,8 @@ jobs:
         env:
           CMR_GRAPHQL_URL: ${{ vars.CMR_GRAPHQL_URL }}
           EDL_URL: ${{ vars.EDL_URL }}
+          EARTHDATA_USERNAME: ${{ secrets.edl_user }}
+          EARTHDATA_PASSWORD: ${{ secrets.edl_password }}
           EDL_USER: ${{ secrets.edl_user }}
           EDL_PASSWORD: ${{ secrets.edl_password }}
 
@@ -92,6 +94,8 @@ jobs:
           pytest ${{ steps.find_test_directory.outputs.test_directory }}/
         env:
           EARTHDATA_ENVIRONMENT: ${{ vars.EARTHDATA_ENVIRONMENT }}
+          EARTHDATA_USERNAME: ${{ secrets.edl_user }}
+          EARTHDATA_PASSWORD: ${{ secrets.edl_password }}
           EDL_USER: ${{ secrets.edl_user }}
           EDL_PASSWORD: ${{ secrets.edl_password }}
           SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}

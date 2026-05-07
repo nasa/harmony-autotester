@@ -6,7 +6,7 @@ import earthaccess
 from tests.conftest import AutotesterRequest
 
 
-def test_sambah(failed_tests, harmony_client, service_collection):
+def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_auth):
     """Run a request against net2cog and make sure it is successful.
 
     As a lightweight example, this test will check the Harmony request
@@ -18,11 +18,22 @@ def test_sambah(failed_tests, harmony_client, service_collection):
     fixtures common to all Harmony services under test.
 
     """
+
+    granules = earthaccess.search_data(
+        collection_concept_id=service_collection['concept_id'],
+        count=1000
+    )
+
+
+    # grouped: dict[int, list[Item]] = {}
+    # for k, v in zip(batch_indices, items, strict=False):
+    #     grouped.setdefault(k, []).append(v)
+
     harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
-        max_results=1,
+        max_results=10,
         extend=True,
-        format='text/csv',
+        concatenate=True
     )
 
     try:

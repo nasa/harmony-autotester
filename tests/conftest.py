@@ -14,10 +14,16 @@ import os
 
 import pytest
 from harmony import Client, Environment, Request
+import earthaccess
 
 environment_mapping = {
     'production': Environment.PROD,
     'UAT': Environment.UAT,
+}
+
+earthaccess_mapping = {
+    'production': earthaccess.PROD,
+    'UAT': earthaccess.UAT,
 }
 
 
@@ -50,6 +56,11 @@ def harmony_client():
         auth=(edl_user, edl_password), env=environment_mapping.get(environment_string)
     )
 
+@pytest.fixture(scope='session')
+def earthaccess_login():
+    """An earthaccess Client object for accessing metadata."""
+    environment_string = os.environ.get('EARTHDATA_ENVIRONMENT')
+    return earthaccess.login(strategy="environment", system=earthaccess_mapping.get(environment_string))
 
 @pytest.fixture(scope='session')
 def test_output_file():
