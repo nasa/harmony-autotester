@@ -70,7 +70,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
         url = (
-            "Not relevant"
+            "NOT_APPLICABLE"
             if harmony_request is None
             else harmony_client.request_as_url(harmony_request)
         )
