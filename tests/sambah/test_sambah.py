@@ -23,6 +23,8 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         collection_concept_id=service_collection['concept_id'],
         count=100
     )
+    assert len(granules) > 0, 'The collection has no granules'
+
     granule_names = [granule['meta']['native-id'] for granule in granules]
     batch_indices = get_batch_indices(granule_names)
 
@@ -95,6 +97,6 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     # All output files should have the correct processing tags.
     processing_tags = ["subsetted", "stitched", "merged"]
     assert all(
-        all(tag in data_link for tag in processing_tags)
-        for data_link in data_links
+        all(tag in link['title'] for tag in processing_tags)
+        for link in data_links
     ), 'Not all data links contain all processing tags'
