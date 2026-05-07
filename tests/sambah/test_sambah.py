@@ -1,10 +1,11 @@
 """pytest suite for Harmony net2cog converter."""
 
-from harmony import Collection, BBox
 import earthaccess
+from batchee.tempo_filename_parser import get_batch_indices
+from harmony import BBox, Collection
 
 from tests.conftest import AutotesterRequest
-from batchee.tempo_filename_parser import get_batch_indices
+
 
 def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_login):
     """Run a request against sambah and make sure it is successful.
@@ -18,7 +19,6 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
     fixtures common to all Harmony services under test.
 
     """
-
     granules = earthaccess.search_data(
         collection_concept_id=service_collection['concept_id'],
         count=100
@@ -31,7 +31,13 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         grouped.setdefault(k, []).append(v)
 
     scans = sorted(grouped.values(), key=len)
-    selected_granules = scans[-2] + scans[-1]
+    if len(scans) > 1:
+        # Select 1 granule from one scan and up to 2 from another scan
+        selected_granules = scans[-2][:1] + scans[-1][:2]
+    else:
+        # Only one scan available; select up to 2 granules
+        selected_granules = scans[-1][:2]
+
     granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
 
     harmony_request = AutotesterRequest(
@@ -79,14 +85,16 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
 
     Will ensure:
 
-    * At least one "data" file is included in the output STAC.
-    * Every output file has the expected file suffix: `_reformatted.tif`.
+    * One "data" file is included in the output STAC.
+    * Output file has the expected tags in the filename.
 
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
-    assert len(data_links) > 1, 'Should have at least 1 COG output'
+    assert len(data_links) == 1, 'Should have 1 concatenated output file'
 
-    # All output files should have the correct suffix and extension.
-    assert all(data_link.endswith('_reformatted.tif') for data_link in data_links), (
-        'Not all data links are GeoTIFFs'
-    )
+    # All output files should have the correct processing tags.
+    processing_tags = ["subsetted", "stitched", "merged"]
+    assert all(
+        all(tag in data_link for tag in processing_tags)
+        for data_link in data_links
+    ), 'Not all data links contain all processing tags'

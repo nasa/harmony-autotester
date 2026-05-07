@@ -12,9 +12,9 @@ conftest.py, which sets up common functionality for:
 import json
 import os
 
+import earthaccess
 import pytest
 from harmony import Client, Environment, Request
-import earthaccess
 
 environment_mapping = {
     'production': Environment.PROD,
@@ -60,7 +60,10 @@ def harmony_client():
 def earthaccess_login():
     """An earthaccess Client object for accessing metadata."""
     environment_string = os.environ.get('EARTHDATA_ENVIRONMENT')
-    return earthaccess.login(strategy="environment", system=earthaccess_mapping.get(environment_string))
+    return earthaccess.login(
+        strategy="environment",
+        system=earthaccess_mapping.get(environment_string)
+    )
 
 @pytest.fixture(scope='session')
 def test_output_file():
