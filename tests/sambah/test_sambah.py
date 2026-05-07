@@ -6,7 +6,7 @@ import earthaccess
 from tests.conftest import AutotesterRequest
 
 
-def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_auth):
+def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_login):
     """Run a request against net2cog and make sure it is successful.
 
     As a lightweight example, this test will check the Harmony request
