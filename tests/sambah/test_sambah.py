@@ -1,6 +1,5 @@
 """pytest suite for Harmony sambah converter."""
 
-
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
 from harmony import BBox, CapabilitiesRequest, Collection
@@ -28,8 +27,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         harmony_request = None
 
         granules = earthaccess.search_data(
-            collection_concept_id=service_collection['concept_id'],
-            count=100
+            collection_concept_id=service_collection['concept_id']
         )
         assert granules, 'The collection has no granules'
 
@@ -61,24 +59,19 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         capabilities = harmony_client.submit(cap_request)
         if 'variables' in capabilities:
             # remove one of the variables for variable subsetting test
-            selected_variables = [
-                item['name'] for item in capabilities['variables']
-            ][:-1]
+            all_variables = [item['name'] for item in capabilities['variables']]
+            selected_variables = all_variables[:-1]
         else:
             selected_variables = ['all']
-
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
             extend=True,
             concatenate=True,
-            spatial = BBox(west, south, east, north),
-            temporal = {
-                "start": start_time,
-                "stop": stop_time
-            },
-            variables = selected_variables,
-            granule_id=granule_id
+            spatial=BBox(west, south, east, north),
+            temporal={'start': start_time, 'stop': stop_time},
+            variables=selected_variables,
+            granule_id=granule_id,
         )
 
         # Submit the job and get the JSON output once completed
@@ -95,7 +88,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
         url = (
-            "NOT_APPLICABLE"
+            'NOT_APPLICABLE'
             if harmony_request is None
             else harmony_client.request_as_url(harmony_request)
         )
@@ -130,8 +123,7 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     assert len(data_links) == 1, 'Should have 1 concatenated output file'
 
     # All output files should have the correct processing tags.
-    processing_tags = ["subsetted", "stitched", "merged"]
+    processing_tags = ['subsetted', 'stitched', 'merged']
     assert all(
-        all(tag in link['title'] for tag in processing_tags)
-        for link in data_links
+        all(tag in link['title'] for tag in processing_tags) for link in data_links
     ), 'Not all data links contain all processing tags'

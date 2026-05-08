@@ -6,18 +6,12 @@ from datetime import datetime
 def get_bounding_box(granule):
     """Extract the bounding box from a granule UMM JSON response."""
     try:
-
         longitude_list = []
         latitude_list = []
-        geometry = (
-                granule["umm"]
-                ["SpatialExtent"]
-                ["HorizontalSpatialDomain"]
-                ["Geometry"]
-        )
+        spatial_extent = granule['umm']['SpatialExtent']
+        geometry = spatial_extent['HorizontalSpatialDomain']['Geometry']
 
-        polygons = geometry.get(
-            'GPolygons')
+        polygons = geometry.get('GPolygons')
         lines = geometry.get('Lines')
         if polygons:
             for polygon in polygons:
@@ -33,7 +27,7 @@ def get_bounding_box(granule):
                 latitude_list.append(point.get('Latitude'))
 
         if not longitude_list or not latitude_list:  # Check if either list is empty
-            raise ValueError("Empty longitude or latitude list")
+            raise ValueError('Empty longitude or latitude list')
 
         north = max(latitude_list)
         south = min(latitude_list)
@@ -41,7 +35,6 @@ def get_bounding_box(granule):
         east = max(longitude_list)
 
     except (KeyError, ValueError):
-
         bounding_box = geometry['BoundingRectangles'][0]
 
         north = bounding_box.get('NorthBoundingCoordinate')
@@ -50,6 +43,7 @@ def get_bounding_box(granule):
         east = bounding_box.get('EastBoundingCoordinate')
 
     return west, east, south, north
+
 
 def generate_near_full_spatial_box(granules):
     """Return the near-full bounding box for spatial subsetting tests."""
@@ -76,28 +70,27 @@ def generate_near_full_spatial_box(granules):
 
     return west, east, south, north
 
+
 def get_temporal_range(granule):
     """Extract the temporal range from a granule UMM JSON response."""
-    start_time = granule['umm']["TemporalExtent"]["RangeDateTime"]["BeginningDateTime"]
-    end_time = granule['umm']["TemporalExtent"]["RangeDateTime"]["EndingDateTime"]
+    start_time = granule['umm']['TemporalExtent']['RangeDateTime']['BeginningDateTime']
+    end_time = granule['umm']['TemporalExtent']['RangeDateTime']['EndingDateTime']
     return start_time, end_time
+
 
 def generate_near_full_temporal_range(granules):
     """Return the near-full temporal range for temporal subsetting tests."""
     umm_times = [get_temporal_range(granule) for granule in granules]
 
     obj_times = [
-        (
-            datetime.fromisoformat(start_time),
-            datetime.fromisoformat(end_time)
-        )
+        (datetime.fromisoformat(start_time), datetime.fromisoformat(end_time))
         for start_time, end_time in umm_times
     ]
 
     reduced_times = [
         (
-            start_time + (end_time-start_time)*0.05,
-            start_time + (end_time-start_time)*0.95
+            start_time + (end_time - start_time) * 0.05,
+            start_time + (end_time - start_time) * 0.95,
         )
         for start_time, end_time in obj_times
     ]
