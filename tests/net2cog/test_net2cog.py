@@ -67,6 +67,6 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     assert len(data_links) > 1, 'Should have at least 1 COG output'
 
     # All output files should have the correct suffix and extension.
-    assert all(link['title'].endswith('_reformatted.tif') for link in data_links), (
+    assert all(link['href'].endswith('_reformatted.tif') for link in data_links), (
         'Not all data links are GeoTIFFs'
     )
