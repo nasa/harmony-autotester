@@ -125,5 +125,5 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     # All output files should have the correct processing tags.
     processing_tags = ['subsetted', 'stitched', 'merged']
     assert all(
-        all(tag in link['title'] for tag in processing_tags) for link in data_links
+        all(tag in link['href'] for tag in processing_tags) for link in data_links
     ), 'Not all data links contain all processing tags'

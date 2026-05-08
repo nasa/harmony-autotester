@@ -8,9 +8,8 @@ def get_bounding_box(granule):
     try:
         longitude_list = []
         latitude_list = []
-        geometry = granule['umm']['SpatialExtent']['HorizontalSpatialDomain'][
-            'Geometry'
-        ]
+        spatial_extent = granule['umm']['SpatialExtent']
+        geometry = spatial_extent['HorizontalSpatialDomain']['Geometry']
 
         polygons = geometry.get('GPolygons')
         lines = geometry.get('Lines')
