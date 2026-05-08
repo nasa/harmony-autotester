@@ -3,9 +3,7 @@
 name: Production Harmony Autotester execution
 
 on:
-  schedule:
-    # Currently scheduled every morning at 4:05am UTC.
-    - cron: "5 4 * * *"
+  workflow_dispatch:
 
 jobs:
   run_production_tests:
