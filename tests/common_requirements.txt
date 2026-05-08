@@ -1,3 +1,4 @@
 # Python packages required by common test code:
 harmony-py ~= 1.2.0
 pytest ~= 8.3.5
+earthaccess>=0.17.0

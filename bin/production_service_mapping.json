@@ -1,4 +1,5 @@
 {
+    "S2940253910-LARC_CLOUD": "tests/sambah",
     "S2697183066-XYZ_PROV": "tests/hybig",
     "S3177988677-POCLOUD": "tests/net2cog"
 }
