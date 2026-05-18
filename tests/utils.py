@@ -1,9 +1,10 @@
 """Utility functions for harmony-autotester pytest test suites."""
 
 from datetime import datetime
+from typing import Any
 
 
-def get_bounding_box(granule):
+def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, float]:
     """Extract the bounding box from a granule UMM JSON response.
 
     Notes:
@@ -11,13 +12,15 @@ def get_bounding_box(granule):
         https://github.com/podaac/l2ss-py-autotest/blob/9243876/tests/verify_collection.py#L246
     """
     try:
-        longitude_list = []
-        latitude_list = []
+        longitude_list: list[float] = []
+        latitude_list: list[float] = []
+
         spatial_extent = granule['umm']['SpatialExtent']
         geometry = spatial_extent['HorizontalSpatialDomain']['Geometry']
 
         polygons = geometry.get('GPolygons')
         lines = geometry.get('Lines')
+
         if polygons:
             for polygon in polygons:
                 points = polygon['Boundary']['Points']
@@ -25,13 +28,14 @@ def get_bounding_box(granule):
                     longitude_list.append(point.get('Longitude'))
                     latitude_list.append(point.get('Latitude'))
                 break
+
         elif lines:
             points = lines[0].get('Points')
             for point in points:
                 longitude_list.append(point.get('Longitude'))
                 latitude_list.append(point.get('Latitude'))
 
-        if not longitude_list or not latitude_list:  # Check if either list is empty
+        if not longitude_list or not latitude_list:
             raise ValueError('Empty longitude or latitude list')
 
         north = max(latitude_list)
@@ -50,18 +54,19 @@ def get_bounding_box(granule):
     return west, east, south, north
 
 
-def generate_near_full_spatial_box(granules):
+def generate_near_full_spatial_box(
+    granules: list[dict[str, Any]],
+) -> tuple[float, float, float, float]:
     """Return the near-full bounding box for spatial subsetting tests.
 
     Reduce each granule bounding box by 5% on every side
     to avoid exact edge alignment
     then use the min/max extents of all reduced granules
     to create a combined near-full spatial subset box.
-
     """
     boxes = [get_bounding_box(granule) for granule in granules]
 
-    interior_boxes = [
+    interior_boxes: list[tuple[float, float, float, float]] = [
         (
             west + (east - west) * 0.05,
             west + (east - west) * 0.95,
@@ -79,29 +84,33 @@ def generate_near_full_spatial_box(granules):
     return west, east, south, north
 
 
-def get_temporal_range(granule):
+def get_temporal_range(granule: dict[str, Any]) -> tuple[str, str]:
     """Extract the temporal range from a granule UMM JSON response."""
     start_time = granule['umm']['TemporalExtent']['RangeDateTime']['BeginningDateTime']
     end_time = granule['umm']['TemporalExtent']['RangeDateTime']['EndingDateTime']
+
     return start_time, end_time
 
 
-def generate_near_full_temporal_range(granules):
+def generate_near_full_temporal_range(
+    granules: list[dict[str, Any]],
+) -> tuple[datetime, datetime]:
     """Return the near-full temporal range for temporal subsetting tests."""
     umm_times = [get_temporal_range(granule) for granule in granules]
 
-    obj_times = [
+    obj_times: list[tuple[datetime, datetime]] = [
         (datetime.fromisoformat(start_time), datetime.fromisoformat(end_time))
         for start_time, end_time in umm_times
     ]
 
-    reduced_times = [
+    reduced_times: list[tuple[datetime, datetime]] = [
         (
             start_time + (end_time - start_time) * 0.05,
             start_time + (end_time - start_time) * 0.95,
         )
         for start_time, end_time in obj_times
     ]
+
     start_time = min(start_time for start_time, end_time in reduced_times)
     end_time = max(end_time for start_time, end_time in reduced_times)
 
