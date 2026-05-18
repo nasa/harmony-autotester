@@ -1,5 +1,7 @@
 """pytest suite for Harmony sambah converter."""
 
+from collections import defaultdict
+
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
 from harmony import BBox, CapabilitiesRequest, Collection
@@ -34,9 +36,10 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         granule_names = [granule['meta']['native-id'] for granule in granules]
         batch_indices = get_batch_indices(granule_names)
 
-        grouped: dict[int, list] = {}
+        grouped = defaultdict(list)
+
         for k, v in zip(batch_indices, granules, strict=False):
-            grouped.setdefault(k, []).append(v)
+            grouped[k].append(v)
 
         scans = sorted(grouped.values(), key=len)
         assert scans, 'No compatible scans were found'
