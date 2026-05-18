@@ -4,7 +4,12 @@ from datetime import datetime
 
 
 def get_bounding_box(granule):
-    """Extract the bounding box from a granule UMM JSON response."""
+    """Extract the bounding box from a granule UMM JSON response.
+
+    Notes:
+        Adopted from l2ss-py-autotest:
+        https://github.com/podaac/l2ss-py-autotest/blob/9243876/tests/verify_collection.py#L246
+    """
     try:
         longitude_list = []
         latitude_list = []
@@ -46,13 +51,16 @@ def get_bounding_box(granule):
 
 
 def generate_near_full_spatial_box(granules):
-    """Return the near-full bounding box for spatial subsetting tests."""
+    """Return the near-full bounding box for spatial subsetting tests.
+
+    Reduce each granule bounding box by 5% on every side
+    to avoid exact edge alignment
+    then use the min/max extents of all reduced granules
+    to create a combined near-full spatial subset box.
+
+    """
     boxes = [get_bounding_box(granule) for granule in granules]
 
-    # Reduce each granule bounding box by 5% on every side
-    # to avoid exact edge alignment
-    # then use the min/max extents of all reduced granules
-    # to create a combined near-full spatial subset box
     interior_boxes = [
         (
             west + (east - west) * 0.05,
