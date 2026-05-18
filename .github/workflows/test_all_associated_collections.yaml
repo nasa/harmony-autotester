@@ -11,9 +11,9 @@ on:
         required: true
         type: string
     secrets:
-      edl_user:
+      earthdata_username:
         required: true
-      edl_password:
+      earthdata_password:
         required: true
 
 jobs:
@@ -44,11 +44,9 @@ jobs:
           python bin/get_all_services.py
         env:
           CMR_GRAPHQL_URL: ${{ vars.CMR_GRAPHQL_URL }}
-          EDL_URL: ${{ vars.EDL_URL }}
-          EARTHDATA_USERNAME: ${{ secrets.edl_user }}
-          EARTHDATA_PASSWORD: ${{ secrets.edl_password }}
-          EDL_USER: ${{ secrets.edl_user }}
-          EDL_PASSWORD: ${{ secrets.edl_password }}
+          EARTHDATA_URL: ${{ vars.EDL_URL }}
+          EARTHDATA_USERNAME: ${{ secrets.earthdata_username }}
+          EARTHDATA_PASSWORD: ${{ secrets.earthdata_password }}
 
   test_all_services:
     runs-on: ubuntu-latest
@@ -94,10 +92,8 @@ jobs:
           pytest ${{ steps.find_test_directory.outputs.test_directory }}/
         env:
           EARTHDATA_ENVIRONMENT: ${{ vars.EARTHDATA_ENVIRONMENT }}
-          EARTHDATA_USERNAME: ${{ secrets.edl_user }}
-          EARTHDATA_PASSWORD: ${{ secrets.edl_password }}
-          EDL_USER: ${{ secrets.edl_user }}
-          EDL_PASSWORD: ${{ secrets.edl_password }}
+          EARTHDATA_USERNAME: ${{ secrets.earthdata_username }}
+          EARTHDATA_PASSWORD: ${{ secrets.earthdata_password }}
           SERVICE_COLLECTIONS: ${{ toJSON(matrix.service.collections) }}
           TEST_DIRECTORY: ${{ steps.find_test_directory.outputs.test_directory }}
 

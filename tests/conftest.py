@@ -50,10 +50,11 @@ def service_collection(request):
 def harmony_client():
     """A harmony-py Client object for making requests."""
     environment_string = os.environ.get('EARTHDATA_ENVIRONMENT')
-    edl_user = os.environ.get('EDL_USER')
-    edl_password = os.environ.get('EDL_PASSWORD')
+    earthdata_username = os.environ.get('EARTHDATA_USERNAME')
+    earthdata_password = os.environ.get('EARTHDATA_PASSWORD')
     return Client(
-        auth=(edl_user, edl_password), env=environment_mapping.get(environment_string)
+        auth=(earthdata_username, earthdata_password),
+        env=environment_mapping.get(environment_string),
     )
 
 

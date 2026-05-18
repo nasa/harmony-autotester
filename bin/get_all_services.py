@@ -13,7 +13,9 @@ import os
 import requests
 
 
-def get_edl_bearer_token(edl_url: str, edl_user: str, edl_password: str) -> str:
+def get_earthdata_bearer_token(
+    earthdata_url: str, earthdata_username: str, earthdata_password: str
+) -> str:
     """Retrieve an Earthdata Login (EDL) token.
 
     This function uses an EDL username and password, which are stored in the
@@ -21,9 +23,9 @@ def get_edl_bearer_token(edl_url: str, edl_user: str, edl_password: str) -> str:
 
     """
     existing_tokens_response = requests.get(
-        f'{edl_url}/api/users/tokens',
+        f'{earthdata_url}/api/users/tokens',
         headers={'Content-type': 'application/json'},
-        auth=(edl_user, edl_password),
+        auth=(earthdata_username, earthdata_password),
         timeout=10,
     )
     existing_tokens_response.raise_for_status()
@@ -31,22 +33,22 @@ def get_edl_bearer_token(edl_url: str, edl_user: str, edl_password: str) -> str:
 
     if len(existing_tokens_json) == 0:
         new_token_response = requests.post(
-            f'{edl_url}/api/users/token',
+            f'{earthdata_url}/api/users/token',
             headers={'Content-type': 'application/json'},
-            auth=(edl_user, edl_password),
+            auth=(earthdata_username, earthdata_password),
             timeout=10,
         )
         new_token_response.raise_for_status()
         new_token_json = new_token_response.json()
-        edl_token = new_token_json['access_token']
+        earthdata_token = new_token_json['access_token']
     else:
-        edl_token = existing_tokens_json[0]['access_token']
+        earthdata_token = existing_tokens_json[0]['access_token']
 
-    return edl_token
+    return earthdata_token
 
 
 def get_authenticated_session(
-    edl_url: str, edl_user: str, edl_password: str
+    earthdata_url: str, earthdata_username: str, earthdata_password: str
 ) -> requests.Session:
     """Create a `requests.Session` object that is authorised via Earthdata login.
 
@@ -55,11 +57,13 @@ def get_authenticated_session(
     requests made via that session.
 
     """
-    edl_bearer_token = get_edl_bearer_token(edl_url, edl_user, edl_password)
+    earthdata_bearer_token = get_earthdata_bearer_token(
+        earthdata_url, earthdata_username, earthdata_password
+    )
     session = requests.session()
     session.headers.update(
         {
-            'Authorization': f'Bearer {edl_bearer_token}',
+            'Authorization': f'Bearer {earthdata_bearer_token}',
         }
     )
     return session
@@ -264,12 +268,14 @@ def output_all_services(harmony_services: list[dict]) -> None:
 if __name__ == '__main__':
     # Retrieve environment-specific information:
     cmr_graphql_url = os.environ.get('CMR_GRAPHQL_URL')
-    edl_url = os.environ.get('EDL_URL')
-    edl_user = os.environ.get('EDL_USER')
-    edl_password = os.environ.get('EDL_PASSWORD')
+    earthdata_url = os.environ.get('EARTHDATA_URL')
+    earthdata_username = os.environ.get('EARTHDATA_USERNAME')
+    earthdata_password = os.environ.get('EARTHDATA_PASSWORD')
 
     # Retrieve all service information and write it to the file listed as
     # GITHUB_OUTPUT.
-    authenticated_session = get_authenticated_session(edl_url, edl_user, edl_password)
+    authenticated_session = get_authenticated_session(
+        earthdata_url, earthdata_username, earthdata_password
+    )
     all_services = get_all_harmony_services(authenticated_session, cmr_graphql_url)
     output_all_services(all_services)
