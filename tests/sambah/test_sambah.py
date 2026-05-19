@@ -7,7 +7,7 @@ from batchee.tempo_filename_parser import get_batch_indices
 from harmony import BBox, CapabilitiesRequest, Collection
 
 from tests.conftest import AutotesterRequest
-from tests.utils import (
+from tests.umm_g_utilities import (
     generate_near_full_spatial_box,
     generate_near_full_temporal_range,
     generate_near_full_variable_subset,
