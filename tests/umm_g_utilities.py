@@ -106,8 +106,19 @@ def generate_near_full_spatial_box(
 
 def get_temporal_range(granule: dict[str, Any]) -> tuple[str, str]:
     """Extract the temporal range from a granule UMM JSON response."""
-    start_time = granule['umm']['TemporalExtent']['RangeDateTime']['BeginningDateTime']
-    end_time = granule['umm']['TemporalExtent']['RangeDateTime']['EndingDateTime']
+
+    temporal_extent = granule['umm']['TemporalExtent']
+    range_datetime = temporal_extent.get('RangeDateTime')
+    single_datetime = temporal_extent.get('SingleDateTime')
+
+    if range_datetime:
+        start_time = range_datetime.get('BeginningDateTime')
+        end_time = range_datetime.get('EndingDateTime')
+    elif single_datetime:
+        start_time = single_datetime
+        end_time = single_datetime
+    else:
+        raise ValueError('Unable to find temporal range')
 
     return start_time, end_time
 
