@@ -4,6 +4,26 @@ from datetime import datetime
 from typing import Any
 
 
+def get_granule_filename(granule: dict[str, Any]) -> str:
+    """Extract the granule filename from the UMM RelatedUrls."""
+    urls = granule['umm']['RelatedUrls']
+
+    for item in urls:
+        url = item.get('URL')
+
+        if (
+            item.get('Type') == 'GET DATA'
+            and item.get('Subtype') in [None, 'DIRECT DOWNLOAD']
+            and url
+            and '.bin' not in url
+        ):
+            return url.split('?')[0].rstrip('/').split('/')[-1]
+
+    raise ValueError(
+        f'Unable to find granule filename for {granule["meta"]["concept-id"]}'
+    )
+
+
 def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, float]:
     """Extract the bounding box from a granule UMM JSON response.
 
@@ -115,3 +135,19 @@ def generate_near_full_temporal_range(
     end_time = max(end_time for start_time, end_time in reduced_times)
 
     return start_time, end_time
+
+
+def generate_near_full_variable_subset(
+    capabilities: dict[str, Any],
+) -> list[str]:
+    """Return a near-full variable subset for subsetting tests.
+
+    Removes one variable from the full variable list to avoid
+    requesting all variables during subsetting tests.
+    """
+    variables = capabilities.get('variables')
+
+    if variables:
+        return [item['name'] for item in variables[:-1]]
+
+    return ['all']

@@ -10,6 +10,8 @@ from tests.conftest import AutotesterRequest
 from tests.utils import (
     generate_near_full_spatial_box,
     generate_near_full_temporal_range,
+    generate_near_full_variable_subset,
+    get_granule_filename,
 )
 
 
@@ -33,7 +35,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         )
         assert granules, 'The collection has no granules'
 
-        granule_names = [granule['meta']['native-id'] for granule in granules]
+        granule_names = [get_granule_filename(granule) for granule in granules]
         batch_indices = get_batch_indices(granule_names)
 
         grouped = defaultdict(list)
@@ -60,12 +62,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
             collection_id=service_collection['concept_id']
         )
         capabilities = harmony_client.submit(cap_request)
-        if 'variables' in capabilities:
-            # remove one of the variables for variable subsetting test
-            selected_variables = [item['name'] for item in capabilities['variables']]
-            selected_variables = selected_variables[:-1]
-        else:
-            selected_variables = ['all']
+        selected_variables = generate_near_full_variable_subset(capabilities)
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
