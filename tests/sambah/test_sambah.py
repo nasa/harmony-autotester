@@ -1,13 +1,17 @@
 """pytest suite for Harmony sambah converter."""
 
+from collections import defaultdict
+
 import earthaccess
 from batchee.tempo_filename_parser import get_batch_indices
 from harmony import BBox, CapabilitiesRequest, Collection
 
 from tests.conftest import AutotesterRequest
-from tests.utils import (
+from tests.umm_g_utilities import (
     generate_near_full_spatial_box,
     generate_near_full_temporal_range,
+    generate_near_full_variable_subset,
+    get_granule_filename,
 )
 
 
@@ -27,16 +31,17 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         harmony_request = None
 
         granules = earthaccess.search_data(
-            collection_concept_id=service_collection['concept_id']
+            collection_concept_id=service_collection['concept_id'], count=100
         )
         assert granules, 'The collection has no granules'
 
-        granule_names = [granule['meta']['native-id'] for granule in granules]
+        granule_names = [get_granule_filename(granule) for granule in granules]
         batch_indices = get_batch_indices(granule_names)
 
-        grouped: dict[int, list] = {}
+        grouped = defaultdict(list)
+
         for k, v in zip(batch_indices, granules, strict=False):
-            grouped.setdefault(k, []).append(v)
+            grouped[k].append(v)
 
         scans = sorted(grouped.values(), key=len)
         assert scans, 'No compatible scans were found'
@@ -57,12 +62,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
             collection_id=service_collection['concept_id']
         )
         capabilities = harmony_client.submit(cap_request)
-        if 'variables' in capabilities:
-            # remove one of the variables for variable subsetting test
-            all_variables = [item['name'] for item in capabilities['variables']]
-            selected_variables = all_variables[:-1]
-        else:
-            selected_variables = ['all']
+        selected_variables = generate_near_full_variable_subset(capabilities)
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
@@ -125,5 +125,5 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
     # All output files should have the correct processing tags.
     processing_tags = ['subsetted', 'stitched', 'merged']
     assert all(
-        all(tag in link['title'] for tag in processing_tags) for link in data_links
+        all(tag in link['href'] for tag in processing_tags) for link in data_links
     ), 'Not all data links contain all processing tags'
