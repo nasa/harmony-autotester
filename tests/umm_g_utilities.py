@@ -15,7 +15,7 @@ def get_granule_filename(granule: dict[str, Any]) -> str:
             item.get('Type') == 'GET DATA'
             and item.get('Subtype') in [None, 'DIRECT DOWNLOAD']
             and url
-            and '.bin' not in url
+            and not url.endswith(('.bin', '.sha256'))
         ):
             return url.split('?')[0].rstrip('/').split('/')[-1]
 
@@ -42,12 +42,10 @@ def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, floa
         lines = geometry.get('Lines')
 
         if polygons:
-            for polygon in polygons:
-                points = polygon['Boundary']['Points']
-                for point in points:
-                    longitude_list.append(point.get('Longitude'))
-                    latitude_list.append(point.get('Latitude'))
-                break
+            points = polygons[0]['Boundary']['Points']
+            for point in points:
+                longitude_list.append(point.get('Longitude'))
+                latitude_list.append(point.get('Latitude'))
 
         elif lines:
             points = lines[0].get('Points')
