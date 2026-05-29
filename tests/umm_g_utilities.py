@@ -72,24 +72,25 @@ def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, floa
     return west, east, south, north
 
 
-def generate_near_full_spatial_box(
+def generate_partial_spatial_box(
     granules: list[dict[str, Any]],
+    reduction_percent: float
 ) -> tuple[float, float, float, float]:
-    """Return the near-full bounding box for spatial subsetting tests.
+    """Return a bounding box for spatial subsetting tests.
 
-    Reduce each granule bounding box by 5% on every side
-    to avoid exact edge alignment
+    Reduce each granule bounding box by the specified percent on 
+    every side
     then use the min/max extents of all reduced granules
-    to create a combined near-full spatial subset box.
+    to create a combined spatial subset box.
     """
     boxes = [get_bounding_box(granule) for granule in granules]
 
     interior_boxes: list[tuple[float, float, float, float]] = [
         (
-            west + (east - west) * 0.05,
-            west + (east - west) * 0.95,
-            south + (north - south) * 0.05,
-            south + (north - south) * 0.95,
+            west + (east - west) * (reduction_percent / 100.0),
+            west + (east - west) * ((100.0 - reduction_percent) / 100.0),
+            south + (north - south) * (reduction_percent / 100.0),
+            south + (north - south) * ((100.0 - reduction_percent) / 100.0),
         )
         for west, east, south, north in boxes
     ]
