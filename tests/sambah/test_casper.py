@@ -36,9 +36,9 @@ def test_sambah_casper(
         granule_id = selected_granule[0]['meta']['concept-id']
 
         # Want output box to be 60% of orginal
-        box_output_size = 60.0
         west, east, south, north = generate_partial_spatial_box(
-            selected_granule, box_output_size
+            selected_granule,
+            output_size=60.0,
         )
 
         harmony_request = AutotesterRequest(
@@ -94,10 +94,9 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
 
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
-    assert len(data_links) == 1, 'Should have 1 reformatted output file'
+    assert len(data_links) == 1, 'Should have 1 subsetted and reformatted output file'
 
-    # All output files should have the correct processing tags.
-    processing_tags = ['subsetted', 'reformatted']
+    # All output files should have the correct processing tag.
     assert all(
-        all(tag in link['href'] for tag in processing_tags) for link in data_links
-    ), 'Not all data links contain all processing tags'
+        link['href'].endswith('_subsetted_reformatted.zip') for link in data_links
+    ), 'Data link is not .zip file'

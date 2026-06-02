@@ -59,12 +59,12 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
 
     Will ensure:
 
-    * At least one "data" file is included in the output STAC.
+    * One "data" file is included in the output STAC.
     * Every output file has the expected file suffix: `_reformatted.zip`.
 
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
-    assert len(data_links) == 1, 'Should have at least 1 CASPER output'
+    assert len(data_links) == 1, 'Should have 1 CASPER output file'
 
     # All output files should have the correct suffix and extension.
     assert all(link['href'].endswith('_reformatted.zip') for link in data_links), (
