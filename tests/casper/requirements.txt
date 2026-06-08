@@ -1,0 +1,4 @@
+# Packages required to run the pytest suite for casper:
+# First install packages used by all tests:
+-r ../common_requirements.txt
+# Then add requirements specific to this test suite:

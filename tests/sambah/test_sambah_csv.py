@@ -1,22 +1,18 @@
-"""pytest suite for Harmony sambah converter."""
-
-from collections import defaultdict
+"""pytest suite for Harmony casper converter in sambah chain."""
 
 import earthaccess
-from batchee.tempo_filename_parser import get_batch_indices
-from harmony import BBox, CapabilitiesRequest, Collection
+from harmony import BBox, Collection
 
 from tests.conftest import AutotesterRequest
 from tests.umm_g_utilities import (
-    generate_near_full_temporal_range,
-    generate_near_full_variable_subset,
     generate_partial_spatial_box,
-    get_granule_filename,
 )
 
 
-def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_login):
-    """Run a request against sambah and make sure it is successful.
+def test_sambah_casper(
+    failed_tests, harmony_client, service_collection, earthaccess_login
+):
+    """Run a request against sambah-casper chain and make sure it is successful.
 
     As a lightweight example, this test will check the Harmony request
     returned a successful status and the output STAC contains only expected
@@ -31,51 +27,25 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         harmony_request = None
 
         granules = earthaccess.search_data(
-            collection_concept_id=service_collection['concept_id'], count=100
+            collection_concept_id=service_collection['concept_id'], count=1
         )
         assert granules, 'The collection has no granules'
 
-        granule_names = [get_granule_filename(granule) for granule in granules]
-        batch_indices = get_batch_indices(granule_names)
+        selected_granule = [granules[0]]
 
-        grouped = defaultdict(list)
+        granule_id = selected_granule[0]['meta']['concept-id']
 
-        for k, v in zip(batch_indices, granules, strict=False):
-            grouped[k].append(v)
-
-        scans = sorted(grouped.values(), key=len)
-        assert scans, 'No compatible scans were found'
-
-        if len(scans) > 1:
-            # Select 1 granule from one scan and up to 2 from another scan
-            selected_granules = scans[-2][:1] + scans[-1][:2]
-        else:
-            # Only one scan available; select up to 2 granules
-            selected_granules = scans[-1][:2]
-
-        granule_id = [granule['meta']['concept-id'] for granule in selected_granules]
-
-        # Want output box to be 90% of orginal
+        # Want output box to be 60% of orginal
         west, east, south, north = generate_partial_spatial_box(
-            selected_granules,
-            output_size=90.0,
+            selected_granule,
+            output_size=60.0,
         )
-        start_time, stop_time = generate_near_full_temporal_range(selected_granules)
-
-        cap_request = CapabilitiesRequest(
-            collection_id=service_collection['concept_id']
-        )
-        capabilities = harmony_client.submit(cap_request)
-        selected_variables = generate_near_full_variable_subset(capabilities)
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),
-            extend=True,
-            concatenate=True,
             spatial=BBox(west, south, east, north),
-            temporal={'start': start_time, 'stop': stop_time},
-            variables=selected_variables,
             granule_id=granule_id,
+            format='text/csv',
         )
 
         # Submit the job and get the JSON output once completed
@@ -124,10 +94,9 @@ def ensure_correct_files_created(harmony_result_json_links: list[dict]):
 
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
-    assert len(data_links) == 1, 'Should have 1 concatenated output file'
+    assert len(data_links) == 1, 'Should have 1 subsetted and reformatted output file'
 
-    # All output files should have the correct processing tags.
-    processing_tags = ['subsetted', 'stitched', 'merged']
+    # All output files should have the correct processing tag.
     assert all(
-        all(tag in link['href'] for tag in processing_tags) for link in data_links
-    ), 'Not all data links contain all processing tags'
+        link['href'].endswith('_subsetted_reformatted.zip') for link in data_links
+    ), 'Data link is not .zip file'
