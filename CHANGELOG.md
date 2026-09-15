@@ -6,6 +6,10 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [vX.Y.Z] - 2026-05-07
 
+### Changed:
+
+- Replaced manual batchee grouping with corresponding function from batchee library
+
 ### Fixed:
 
 - Fixes incorrect access in net2cog test to the filename from the Harmony result JSON

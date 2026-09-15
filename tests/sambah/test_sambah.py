@@ -37,7 +37,7 @@ def test_sambah(failed_tests, harmony_client, service_collection, earthaccess_lo
         granule_names = [get_granule_filename(granule) for granule in granules]
         batch_indices = get_batch_indices(granule_names)
 
-        grouped = _group_batch_indices(batch_indices, granule_names)
+        grouped = _group_batch_indices(batch_indices, granules)
 
         scans = sorted(grouped.values(), key=len)
         assert scans, 'No compatible scans were found'
