@@ -125,6 +125,38 @@ concept ID is used as it is immutable. It is possible to also configure tests
 only for either UAT or production by only including information for the test
 directory in the appropriate mapping.
 
+### Running a test suite locally:
+
+The test fixtures read the same environment variables the nightly workflow
+sets. Install the requirements for the test suite and for the `bin` scripts,
+then:
+
+```bash
+pip install -r bin/requirements.txt -r tests/<service>/requirements.txt
+
+export EARTHDATA_ENVIRONMENT=UAT  # or production
+export EARTHDATA_USERNAME=<your EDL username>
+export EARTHDATA_PASSWORD=<your EDL password>
+
+# Populate SERVICE_COLLECTIONS with every collection associated with the
+# service mapped to this test directory, as the nightly workflow would:
+export SERVICE_COLLECTIONS=$(python bin/get_service_collections.py tests/<service>)
+
+pytest tests/<service>/
+```
+
+`bin/get_service_collections.py` looks up the UMM-S concept ID mapped to
+the test directory in the service mapping file for `EARTHDATA_ENVIRONMENT`
+and queries CMR GraphQL for the associated collections. To test a subset,
+set `SERVICE_COLLECTIONS` by hand instead, e.g.:
+
+```bash
+export SERVICE_COLLECTIONS='[{"concept_id": "C1234-PROV", "short_name": "NAME", "version": "1"}]'
+```
+
+`test_output.json` is written to the test directory unless `TEST_DIRECTORY`
+is set.
+
 ### Common test fixtures:
 
 `tests/conftest.py` contains test fixtures, classes and functions that should

@@ -6,6 +6,15 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [vX.Y.Z] - 2026-05-07
 
+### Added:
+
+- DAS-2519 - Added `bin/get_service_collections.py`, a local development helper
+  that prints every collection associated with a test directory's service in
+  the format expected by the `SERVICE_COLLECTIONS` environment variable.
+  Parametrised test IDs now include the collection short name, version and
+  concept ID, and `TEST_DIRECTORY` defaults to the directory of the tests
+  being run.
+
 ### Fixed:
 
 - Fixes incorrect access in net2cog test to the filename from the Harmony result JSON

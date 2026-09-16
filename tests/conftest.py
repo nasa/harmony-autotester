@@ -37,8 +37,15 @@ class AutotesterRequest(Request):
         super().__init__(**kwargs, labels=labels)
 
 
+service_collections = json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]'))
+
+
 @pytest.fixture(
-    params=json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]')),
+    params=service_collections,
+    ids=[
+        f'{collection["short_name"]}-{collection["version"]}-{collection["concept_id"]}'
+        for collection in service_collections
+    ],
     scope='session',
 )
 def service_collection(request):
@@ -68,9 +75,16 @@ def earthaccess_login():
 
 
 @pytest.fixture(scope='session')
-def test_output_file():
-    """The path to where the failed test information should be written."""
-    test_directory = os.environ.get('TEST_DIRECTORY')
+def test_output_file(request):
+    """The path to where the failed test information should be written.
+
+    Defaults to the directory of the tests being run if `TEST_DIRECTORY` is
+    not set (local development).
+
+    """
+    test_directory = os.environ.get('TEST_DIRECTORY') or (
+        request.session.items[0].path.parent
+    )
     return f'{test_directory}/test_output.json'
 
 
