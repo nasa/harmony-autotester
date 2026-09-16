@@ -178,7 +178,7 @@ These are found in the `.github/workflows` directory:
 ## Releasing:
 
 The Harmony Autotester does not produce published artefacts capturing changes
-to the tset suites, as the repository itself _is_ the artefact. However, it is
+to the test suites, as the repository itself _is_ the artefact. However, it is
 useful to denote when large pieces of functionality are added or updated to
 the overall autotester, such as changing the core CI/CD or adding/updating
 individual test suites.
