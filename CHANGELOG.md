@@ -4,7 +4,7 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [vX.Y.Z] - 2026-05-07
+## [v1.2.2] - 2026-09-16
 
 ### Added:
 
@@ -21,6 +21,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
   by requesting the correct key from the result dictionary.
 
 ### Changed:
+
+- Replaced manual batchee grouping with corresponding function from batchee library
 
 - Release notes published in GitHub releases will now include a list of commit
   messages since the last release.
