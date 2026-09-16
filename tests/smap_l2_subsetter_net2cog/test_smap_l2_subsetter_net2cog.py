@@ -18,22 +18,22 @@ def test_smap_l2_subsetter_net2cog(
         count=1,
     )
 
+    # Create a very small bounding box 25% of the full area.
     west, east, south, north = generate_partial_spatial_box(granules, 25.0)
     spatial_limit = BBox(west, south, east, north)
 
+    # Get a list of variables and choose the first 2. (or 1 if there's only 1)
     cap_request = CapabilitiesRequest(collection_id=service_collection['concept_id'])
     capabilities = harmony_client.submit(cap_request)
-    variables = capabilities.get('figure this out.')
+    all_variables = capabilities.get('variables')
 
-    variables = 'Ancillary_Data/bare_soil_roughness_tabular'
+    variables = [v['name'] for v in all_variables[0:2]]
 
     request_params = {
         'spatial': spatial_limit,
-        'variables': [variables],
+        'variables': variables,
         'format': 'image/tiff',
     }
-
-    print(f'request_params: {request_params}')
 
     harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
@@ -51,8 +51,8 @@ def test_smap_l2_subsetter_net2cog(
             f'Harmony request failed:\n\n{result_json["message"]}'
         )
 
-        # Check the URLs for results are all of the expected type.
-        ensure_correct_files_created(result_json['links'])
+        # Check the URLs for results are all of the expected type and names.
+        ensure_correct_files_created(result_json['links'], variables)
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
         failed_tests.append(
@@ -72,6 +72,19 @@ def test_smap_l2_subsetter_net2cog(
         raise AssertionError('Unexpected request failure') from exception
 
 
-def ensure_correct_files_created(harmony_result_json_links: list[dict]):
+def ensure_correct_files_created(
+    harmony_result_json_links: list[dict], variables: list[str]
+):
     """Verify output files look reasonable."""
-    print(harmony_result_json_links)
+    # generated data for each variable selected
+    data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
+    assert len(data_links) == len(variables)
+
+    # all are .tifs
+    assert all(link['href'].endswith('.tif') for link in data_links)
+
+    for variable in variables:
+        search_string = variable.replace('/', '_')
+        assert any(
+            search_string in link.get('href', '') for link in harmony_result_json_links
+        )
