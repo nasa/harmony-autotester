@@ -4,6 +4,9 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+
+## [vX.Y.Z] - unreleased
+
 ## [v1.2.2] - 2026-09-16
 
 ### Added:
