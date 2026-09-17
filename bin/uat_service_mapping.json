@@ -1,7 +1,7 @@
 {
-  "S1262025641-LARC_CLOUD": "tests/sambah",
   "S1257776354-EEDTEST": "tests/hybig",
+  "S1262025641-LARC_CLOUD": "tests/sambah",
   "S1268612173-POCLOUD": "tests/net2cog",
-  "S1277378538-LARC_CLOUD": "tests/casper",
-  "S1273345267-EEDTEST": "tests/smap_l2_subsetter_net2cog"
+  "S1273345267-EEDTEST": "tests/smap_l2_subsetter_net2cog",
+  "S1277378538-LARC_CLOUD": "tests/casper"
 }
