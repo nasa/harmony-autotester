@@ -76,13 +76,14 @@ def ensure_correct_files_created(
     harmony_result_json_links: list[dict], variables: list[str]
 ):
     """Verify output files look reasonable."""
-    # generated data for each variable selected
+    # Correct number of data files generated.
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
     assert len(data_links) == len(variables)
 
-    # all are .tifs
+    # All hrefs are .tifs
     assert all(link['href'].endswith('.tif') for link in data_links)
 
+    # generated files for each selected variable.
     for variable in variables:
         search_string = variable.replace('/', '_')
         assert any(
