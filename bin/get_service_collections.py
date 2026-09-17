@@ -53,6 +53,9 @@ def get_service_concept_id(test_directory: str, mapping_file: Path) -> str | Non
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        sys.exit('Usage: python bin/get_service_collections.py tests/<service>')
+    test_directory = sys.argv[1].rstrip('/')
     test_directory = sys.argv[1].rstrip('/')
     earthdata_environment = os.environ['EARTHDATA_ENVIRONMENT']
     defaults = ENVIRONMENT_DEFAULTS[earthdata_environment]
