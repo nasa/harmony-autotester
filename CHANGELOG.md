@@ -4,11 +4,19 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [vX.Y.Z] - 2026-05-07
 
-### Changed:
+## [vX.Y.Z] - unreleased
 
-- Replaced manual batchee grouping with corresponding function from batchee library
+## [v1.3.0] - 2026-09-23
+
+### Added:
+
+- DAS-2519 - Added `bin/get_service_collections.py`, a local development helper
+  that prints every collection associated with a test directory's service in
+  the format expected by the `SERVICE_COLLECTIONS` environment variable.
+  Parametrised test IDs now include the collection short name, version and
+  concept ID, and `TEST_DIRECTORY` defaults to the directory of the tests
+  being run.
 
 ### Fixed:
 
@@ -16,6 +24,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
   by requesting the correct key from the result dictionary.
 
 ### Changed:
+
+- Replaced manual batchee grouping with corresponding function from batchee library
 
 - Release notes published in GitHub releases will now include a list of commit
   messages since the last release.
@@ -55,7 +65,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.2.1...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.2.2...HEAD
+[v1.2.2]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.2
 [v1.2.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.1
 [v1.2.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.2.0
 [v1.1.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.1.0
