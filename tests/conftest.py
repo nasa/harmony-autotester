@@ -14,7 +14,7 @@ import os
 
 import earthaccess
 import pytest
-from harmony import Client, Environment, Request
+from harmony import CapabilitiesRequest, Client, Environment, Request
 
 environment_mapping = {
     'production': Environment.PROD,
@@ -95,3 +95,16 @@ def failed_tests(test_output_file):
     yield failed_test_information
     with open(test_output_file, 'w', encoding='utf-8') as file_handler:
         json.dump(failed_test_information, file_handler, indent=2)
+
+
+def get_configured_variable_names(
+    harmony_client: Client, collection_id: str
+) -> list[str]:
+    """Get the name of the configured variables for the collection.
+
+    Calls Harmony's capabilities endpont for the collection and returns a list
+    of all configured variable names.
+    """
+    cap_request = CapabilitiesRequest(collection_id=collection_id)
+    capabilities = harmony_client.submit(cap_request)
+    return [v['name'] for v in capabilities.get('variables')]

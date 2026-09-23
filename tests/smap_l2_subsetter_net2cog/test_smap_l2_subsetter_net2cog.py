@@ -1,9 +1,9 @@
 """pytest suite for smap-l2-subsetter-net2cog."""
 
 import earthaccess
-from harmony import BBox, CapabilitiesRequest, Collection
+from harmony import BBox, Collection
 
-from tests.conftest import AutotesterRequest
+from tests.conftest import AutotesterRequest, get_configured_variable_names
 from tests.umm_g_utilities import generate_partial_spatial_box
 
 
@@ -23,11 +23,9 @@ def test_smap_l2_subsetter_net2cog(
     spatial_limit = BBox(west, south, east, north)
 
     # Get a list of variables and choose the first 2. (or 1 if there's only 1)
-    cap_request = CapabilitiesRequest(collection_id=service_collection['concept_id'])
-    capabilities = harmony_client.submit(cap_request)
-    all_variables = capabilities.get('variables')
-
-    variables = [v['name'] for v in all_variables[0:2]]
+    variables = get_configured_variable_names(
+        harmony_client, service_collection['concept_id']
+    )[0:2]
 
     request_params = {
         'spatial': spatial_limit,
