@@ -128,12 +128,14 @@ directory in the appropriate mapping.
 ### Running a test suite locally:
 
 The test fixtures read the same environment variables the nightly workflow
-sets. Install the requirements for the test suite and for the `bin` scripts,
-then:
+sets. Install the requirements for the test suite and for the `bin` scripts:
 
 ```bash
 pip install -r bin/requirements.txt -r tests/<service>/requirements.txt
+```
 
+then run your tests:
+```bash
 export EARTHDATA_ENVIRONMENT=UAT  # or production
 export EARTHDATA_USERNAME=<your EDL username>
 export EARTHDATA_PASSWORD=<your EDL password>
@@ -145,10 +147,10 @@ export SERVICE_COLLECTIONS=$(python bin/get_service_collections.py tests/<servic
 pytest tests/<service>/
 ```
 
-`bin/get_service_collections.py` looks up the UMM-S concept ID mapped to
-the test directory in the service mapping file for `EARTHDATA_ENVIRONMENT`
-and queries CMR GraphQL for the associated collections. To test a subset,
-set `SERVICE_COLLECTIONS` by hand instead, e.g.:
+`bin/get_service_collections.py` looks up the UMM-S concept ID mapped to the
+test directory in the service mapping file for `EARTHDATA_ENVIRONMENT` and
+queries CMR GraphQL for the associated collections. To test a single
+collection, set `SERVICE_COLLECTIONS` by hand, e.g.:
 
 ```bash
 export SERVICE_COLLECTIONS='[{"concept_id": "C1234-PROV", "short_name": "NAME", "version": "1"}]'
