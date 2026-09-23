@@ -27,15 +27,11 @@ def test_smap_l2_subsetter_net2cog(
         harmony_client, service_collection['concept_id']
     )[0:2]
 
-    request_params = {
-        'spatial': spatial_limit,
-        'variables': variables,
-        'format': 'image/tiff',
-    }
-
     harmony_request = AutotesterRequest(
         collection=Collection(id=service_collection['concept_id']),
-        **request_params,
+        spatial=spatial_limit,
+        variables=variables,
+        format='image/tiff',
         max_results=1,
     )
 
