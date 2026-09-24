@@ -217,6 +217,19 @@ useful to denote when large pieces of functionality are added or updated to
 the overall autotester, such as changing the core CI/CD or adding/updating
 individual test suites.
 
+### Which version to bump:
+
+* Major - when breaking changes are made. For example the interface between the
+  Autotester CI/CD and the individual test suites.
+* Minor - when non-breaking additions are made. This includes helper functionality
+  or other additional features of the Autotester harness itself, or adding a
+  whole new test suite.
+* Patch - when minor changes are made to existing tests or the overall Autotester
+  harness. This might be a bug fix, or providing additional checks in existing
+  tests.
+
+### Documenting changes:
+
 Version information is captured by two files:
 
 * `version.txt`
