@@ -7,6 +7,11 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [vX.Y.Z] - unreleased
 
+### Fixed
+
+- Fail service and collection discovery when its HTTP error budget is exhausted,
+  rather than publishing incomplete results as a successful test matrix.
+
 ## [v1.3.0] - 2026-09-23
 
 ### Added:
