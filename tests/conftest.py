@@ -70,7 +70,7 @@ def pytest_sessionfinish(session, exitstatus):
         # when this hook is called by the controller.
         return
 
-    test_directory = Path(os.environ.get('TEST_DIRECTORY')) or session.config.rootpath
+    test_directory = Path(os.environ.get('TEST_DIRECTORY') or session.config.rootpath)
     combined_test_output = []
 
     for worker_test_output_file in glob(f'{test_directory}/test_output_*.json'):
@@ -130,7 +130,7 @@ def test_output_file(request, worker_id):
     executed without specifying the number of workers, `worker_id="master"`.
 
     """
-    test_directory = Path(os.environ.get('TEST_DIRECTORY')) or request.config.rootpath
+    test_directory = Path(os.environ.get('TEST_DIRECTORY') or request.config.rootpath)
     return f'{test_directory}/test_output_{worker_id}.json'
 
 
