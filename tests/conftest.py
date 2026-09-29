@@ -7,10 +7,17 @@ conftest.py, which sets up common functionality for:
 * The list of collections associated with the service under test.
 * A cache for test failures, to be written out at the end of testing.
 
+Note: With the use of the `pytest-xdist` plugin, session scoped fixtures are
+not shared between workers. This is particularly important for the
+`failed_tests` fixture that aggregates failures and output test files.
+
 """
 
 import json
 import os
+from glob import glob
+from os import remove
+from pathlib import Path
 
 import earthaccess
 import pytest
@@ -38,6 +45,43 @@ class AutotesterRequest(Request):
 
 
 service_collections = json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]'))
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """A `pytest` hook that runs at the end of the test sessions.
+
+    Note: This includes sessions on each `pytest-xdist` worker node, as well as
+    the overall controller node.
+
+    After the workers finish, the controller executes this hook and generates
+    the final output file with all failures from all workers.
+
+    If there is no `TEST_DIRECTORY` environment variable, output files will be
+    stored in the directory from which the `pytest` command was executed. This
+    environment variable will always be set in the GitHub CI/CD.
+
+    If a `test_output.json` file already exists in the directory, it will be
+    clobbered by this hook. This is important when the `TEST_DIRECTORY`
+    environment variable is not set.
+
+    """
+    if hasattr(session.config, 'workerinput'):
+        # Do not try to combine outputs at the end of a worker's session, only
+        # when this hook is called by the controller.
+        return
+
+    test_directory = Path(os.environ.get('TEST_DIRECTORY')) or session.config.rootpath
+    combined_test_output = []
+
+    for worker_test_output_file in glob(f'{test_directory}/test_output_*.json'):
+        with open(worker_test_output_file) as file_handler:
+            combined_test_output.extend(json.load(file_handler))
+
+        # Clean up worker-specific output files:
+        remove(worker_test_output_file)
+
+    with open(f'{test_directory}/test_output.json', 'w') as file_handler:
+        json.dump(combined_test_output, file_handler, indent=2)
 
 
 @pytest.fixture(
@@ -75,22 +119,31 @@ def earthaccess_login():
 
 
 @pytest.fixture(scope='session')
-def test_output_file(request):
+def test_output_file(request, worker_id):
     """The path to where the failed test information should be written.
 
-    Defaults to the directory of the tests being run if `TEST_DIRECTORY` is
-    not set (local development).
+    Defaults to the directory from which the `pytest` command was executed if
+    `TEST_DIRECTORY` is not set (local development).
+
+    Note: `pytest-xdist` will set worker IDs with format "gw0", "gw1", etc, if
+    parallelisation is enabled. If the plugin is disabled (n=0), or `pytest` is
+    executed without specifying the number of workers, `worker_id="master"`.
 
     """
-    test_directory = os.environ.get('TEST_DIRECTORY') or (
-        request.session.items[0].path.parent
-    )
-    return f'{test_directory}/test_output.json'
+    test_directory = Path(os.environ.get('TEST_DIRECTORY')) or request.config.rootpath
+    return f'{test_directory}/test_output_{worker_id}.json'
 
 
 @pytest.fixture(scope='session')
 def failed_tests(test_output_file):
-    """A fixture to accumulate failed test results."""
+    """A fixture to accumulate failed test results.
+
+    Note: The `pytest-xdist` plugin will not share session-based fixtures
+    across workers, so there will be an instance of the `failed_tests` worker
+    for each fixture. The outputs from each worker are combined using the
+    `pytest_sessionfinish` hook.
+
+    """
     failed_test_information = []
     yield failed_test_information
     with open(test_output_file, 'w', encoding='utf-8') as file_handler:
