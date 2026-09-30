@@ -9,14 +9,13 @@ conftest.py, which sets up common functionality for:
 
 Note: With the use of the `pytest-xdist` plugin, session scoped fixtures are
 not shared between workers. This is particularly important for the
-`failed_tests` fixture that aggregates failures and output test files.
+`failed_tests` fixture, which are sent from each worker to the controller node
+and written to a single output file.
 
 """
 
 import json
 import os
-from glob import glob
-from os import remove
 from pathlib import Path
 
 import earthaccess
@@ -47,6 +46,30 @@ class AutotesterRequest(Request):
 service_collections = json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]'))
 
 
+failed_tests_key = pytest.StashKey[list[dict]]()
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Create a list to accumulate failed test information."""
+    config.stash[failed_tests_key] = []
+
+
+@pytest.hookimpl(optionalhook=True)
+def pytest_testnodedown(node, error) -> None:
+    """Collect test failures sent by a finished `pytest-xdist` worker.
+
+    This hook is only called on the controller node. Each worker sends the
+    contents of the `failed_tests` fixture to the controller via `workeroutput`
+    in `pytest_sessionfinish`. If a worker crashed, `workeroutput` may not be
+    set. `pytest` will know which tests have failed but the `failed_tests`
+    information from that node prior to the crash will be lost.
+
+    """
+    node.config.stash[failed_tests_key].extend(
+        getattr(node, 'workeroutput', {}).get('failed_tests', [])
+    )
+
+
 def pytest_sessionfinish(session, exitstatus):
     """A `pytest` hook that runs at the end of the test sessions.
 
@@ -65,23 +88,18 @@ def pytest_sessionfinish(session, exitstatus):
     environment variable is not set.
 
     """
+    failed_tests = session.config.stash[failed_tests_key]
+
     if hasattr(session.config, 'workerinput'):
-        # Do not try to combine outputs at the end of a worker's session, only
-        # when this hook is called by the controller.
+        # This is a worker node. Set failed_tests in the workeroutput and do
+        # not progress to write final output file
+        session.config.workeroutput['failed_tests'] = failed_tests
         return
 
     test_directory = Path(os.environ.get('TEST_DIRECTORY') or session.config.rootpath)
-    combined_test_output = []
-
-    for worker_test_output_file in glob(f'{test_directory}/test_output_*.json'):
-        with open(worker_test_output_file) as file_handler:
-            combined_test_output.extend(json.load(file_handler))
-
-        # Clean up worker-specific output files:
-        remove(worker_test_output_file)
 
     with open(f'{test_directory}/test_output.json', 'w') as file_handler:
-        json.dump(combined_test_output, file_handler, indent=2)
+        json.dump(failed_tests, file_handler, indent=2)
 
 
 @pytest.fixture(
@@ -119,29 +137,12 @@ def earthaccess_login():
 
 
 @pytest.fixture(scope='session')
-def test_output_file(request, worker_id):
-    """The path to where the failed test information should be written.
-
-    Defaults to the directory from which the `pytest` command was executed if
-    `TEST_DIRECTORY` is not set (local development).
-
-    Note: `pytest-xdist` will set worker IDs with format "gw0", "gw1", etc, if
-    parallelisation is enabled. If the plugin is disabled (n=0), or `pytest` is
-    executed without specifying the number of workers, `worker_id="master"`.
-
-    """
-    test_directory = Path(os.environ.get('TEST_DIRECTORY') or request.config.rootpath)
-    return f'{test_directory}/test_output_{worker_id}.json'
-
-
-@pytest.fixture(scope='session')
-def failed_tests(test_output_file):
+def failed_tests(request):
     """A fixture to accumulate failed test results.
 
     Note: The `pytest-xdist` plugin will not share session-based fixtures
-    across workers, so there will be an instance of the `failed_tests` fixture
-    for each worker. The outputs from each worker are combined using the
-    `pytest_sessionfinish` hook.
+    across workers, each worker has its own `failed_tests` list. These lists
+    are combined on the controller node via `pytest_testnodedown`.
 
     If a worker crashes it will be automatically restarted to continue any
     remaining tests. But the restarted worker will also have a fresh version of
@@ -150,10 +151,7 @@ def failed_tests(test_output_file):
     output.
 
     """
-    failed_test_information = []
-    yield failed_test_information
-    with open(test_output_file, 'w', encoding='utf-8') as file_handler:
-        json.dump(failed_test_information, file_handler, indent=2)
+    return request.config.stash[failed_tests_key]
 
 
 def get_configured_variable_names(
