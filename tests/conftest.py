@@ -139,9 +139,15 @@ def failed_tests(test_output_file):
     """A fixture to accumulate failed test results.
 
     Note: The `pytest-xdist` plugin will not share session-based fixtures
-    across workers, so there will be an instance of the `failed_tests` worker
-    for each fixture. The outputs from each worker are combined using the
+    across workers, so there will be an instance of the `failed_tests` fixture
+    for each worker. The outputs from each worker are combined using the
     `pytest_sessionfinish` hook.
+
+    If a worker crashes it will be automatically restarted to continue any
+    remaining tests. But the restarted worker will also have a fresh version of
+    any session-scoped fixtures, like `failed_tests`, and so any test failures
+    discovered in a worker prior to it failing will be missing from the final
+    output.
 
     """
     failed_test_information = []
