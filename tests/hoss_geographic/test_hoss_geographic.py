@@ -21,11 +21,10 @@ def test_hoss_geographic(
 
         west, east, south, north = generate_partial_spatial_box(granules, 25.0)
 
-        # Request up to two configured variables, or all variables if the
-        # collection has no configured variables.
+        # Request up to two configured variables (all variables if none are configured).
         variables = get_configured_variable_names(
             harmony_client, service_collection['concept_id']
-        )[0:2] or ['all']
+        )[0:2]
 
         harmony_request = AutotesterRequest(
             collection=Collection(id=service_collection['concept_id']),

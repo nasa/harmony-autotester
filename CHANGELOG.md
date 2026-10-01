@@ -12,6 +12,11 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
   production and UAT. For each associated collection, a granule is requested
   with a variable and bounding box subset and checks the request is successful.
 
+### Changed:
+
+- DAS-2514 - `get_configured_variable_names` returns `['all']` for collections with no
+  configured variables.
+
 ## [v1.4.0] - 2026-09-29
 
 ### Changed:
