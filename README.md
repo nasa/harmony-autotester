@@ -139,12 +139,17 @@ then run your tests:
 export EARTHDATA_ENVIRONMENT=UAT  # or production
 export EARTHDATA_USERNAME=<your EDL username>
 export EARTHDATA_PASSWORD=<your EDL password>
+export TEST_DIRECTORY=tests/<service>/
 
 # Populate SERVICE_COLLECTIONS with every collection associated with the
 # service mapped to this test directory, as the nightly workflow would:
 export SERVICE_COLLECTIONS=$(python bin/get_service_collections.py tests/<service>)
 
+# Run the tests in series
 pytest tests/<service>/
+
+# Alternative: Run the tests in parallel using pytest-xdist plugin
+pytest -n auto tests/<service>/
 ```
 
 `bin/get_service_collections.py` looks up the UMM-S concept ID mapped to the
@@ -198,6 +203,21 @@ should include those dependencies by using the following line:
 ```
 -r ../common_requirements.txt
 ```
+
+### Parallelisation:
+
+The Harmony Autotester uses the `pytest-xdist` plug-in to manage parallelism
+within a single test suite. `pytest-xdist` is included in the overall packages
+all test suites use, via `tests/common_requirements.txt`. By specifying
+`-n auto` as a flag in the command line invocation of `pytest`, `pytest-xdist`
+will create an appropriate number of workers based on the number of available
+CPUs. As the majority of time spent during testing is waiting for Harmony to
+complete requests, this should significantly reduce the overall run time of
+each test suite.
+
+The main implication of using the `pytest-xdist` plug-in is that session-scoped
+`pytest` fixtures are not shared between workers. Instead there is one instance
+of the fixture per worker.
 
 ## CI/CD workflows:
 

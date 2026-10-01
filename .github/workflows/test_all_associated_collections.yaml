@@ -89,7 +89,7 @@ jobs:
         id: "run_test_suite"
         if: ${{ steps.find_test_directory.outputs.test_directory != '' }}
         run: |
-          pytest ${{ steps.find_test_directory.outputs.test_directory }}/
+          pytest -n auto ${{ steps.find_test_directory.outputs.test_directory }}/
         env:
           EARTHDATA_ENVIRONMENT: ${{ vars.EARTHDATA_ENVIRONMENT }}
           EARTHDATA_USERNAME: ${{ secrets.earthdata_username }}

@@ -7,10 +7,16 @@ conftest.py, which sets up common functionality for:
 * The list of collections associated with the service under test.
 * A cache for test failures, to be written out at the end of testing.
 
+Note: With the use of the `pytest-xdist` plugin, session scoped fixtures are
+not shared between workers. This is particularly important for the
+`failed_tests` fixture, which are sent from each worker to the controller node
+and written to a single output file.
+
 """
 
 import json
 import os
+from pathlib import Path
 
 import earthaccess
 import pytest
@@ -38,6 +44,62 @@ class AutotesterRequest(Request):
 
 
 service_collections = json.loads(os.environ.get('SERVICE_COLLECTIONS', '[]'))
+
+
+failed_tests_key = pytest.StashKey[list[dict]]()
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Create a list to accumulate failed test information."""
+    config.stash[failed_tests_key] = []
+
+
+@pytest.hookimpl(optionalhook=True)
+def pytest_testnodedown(node, error) -> None:
+    """Collect test failures sent by a finished `pytest-xdist` worker.
+
+    This hook is only called on the controller node. Each worker sends the
+    contents of the `failed_tests` fixture to the controller via `workeroutput`
+    in `pytest_sessionfinish`. If a worker crashed, `workeroutput` may not be
+    set. `pytest` will know which tests have failed but the `failed_tests`
+    information from that node prior to the crash will be lost.
+
+    """
+    node.config.stash[failed_tests_key].extend(
+        getattr(node, 'workeroutput', {}).get('failed_tests', [])
+    )
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """A `pytest` hook that runs at the end of the test sessions.
+
+    Note: This includes sessions on each `pytest-xdist` worker node, as well as
+    the overall controller node.
+
+    After the workers finish, the controller executes this hook and generates
+    the final output file with all failures from all workers.
+
+    If there is no `TEST_DIRECTORY` environment variable, output files will be
+    stored in the directory from which the `pytest` command was executed. This
+    environment variable will always be set in the GitHub CI/CD.
+
+    If a `test_output.json` file already exists in the directory, it will be
+    clobbered by this hook. This is important when the `TEST_DIRECTORY`
+    environment variable is not set.
+
+    """
+    failed_tests = session.config.stash[failed_tests_key]
+
+    if hasattr(session.config, 'workerinput'):
+        # This is a worker node. Set failed_tests in the workeroutput and do
+        # not progress to write final output file
+        session.config.workeroutput['failed_tests'] = failed_tests
+        return
+
+    test_directory = Path(os.environ.get('TEST_DIRECTORY') or session.config.rootpath)
+
+    with open(f'{test_directory}/test_output.json', 'w') as file_handler:
+        json.dump(failed_tests, file_handler, indent=2)
 
 
 @pytest.fixture(
@@ -75,26 +137,21 @@ def earthaccess_login():
 
 
 @pytest.fixture(scope='session')
-def test_output_file(request):
-    """The path to where the failed test information should be written.
+def failed_tests(request):
+    """A fixture to accumulate failed test results.
 
-    Defaults to the directory of the tests being run if `TEST_DIRECTORY` is
-    not set (local development).
+    Note: The `pytest-xdist` plugin will not share session-based fixtures
+    across workers, each worker has its own `failed_tests` list. These lists
+    are combined on the controller node via `pytest_testnodedown`.
+
+    If a worker crashes it will be automatically restarted to continue any
+    remaining tests. But the restarted worker will also have a fresh version of
+    any session-scoped fixtures, like `failed_tests`, and so any test failures
+    discovered in a worker prior to it failing will be missing from the final
+    output.
 
     """
-    test_directory = os.environ.get('TEST_DIRECTORY') or (
-        request.session.items[0].path.parent
-    )
-    return f'{test_directory}/test_output.json'
-
-
-@pytest.fixture(scope='session')
-def failed_tests(test_output_file):
-    """A fixture to accumulate failed test results."""
-    failed_test_information = []
-    yield failed_test_information
-    with open(test_output_file, 'w', encoding='utf-8') as file_handler:
-        json.dump(failed_test_information, file_handler, indent=2)
+    return request.config.stash[failed_tests_key]
 
 
 def get_configured_variable_names(

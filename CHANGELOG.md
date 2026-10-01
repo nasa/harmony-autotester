@@ -5,7 +5,15 @@ project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
-## [vX.Y.Z] - unreleased
+## [v1.3.1] - 2026-09-29
+
+### Changed:
+
+- The Autotest CI/CD has been updated to use the `pytest-xdist` plugin and
+  parallelise test execution. The number of workers will default to the
+  available CPUs on the GitHub test runner executing the tests. This should
+  significantly improve runtime, which already takes several hours for some of
+  the few service chains configured in the Autotester.
 
 ## [v1.3.0] - 2026-09-23
 
