@@ -165,4 +165,4 @@ def get_configured_variable_names(
     """
     cap_request = CapabilitiesRequest(collection_id=collection_id)
     capabilities = harmony_client.submit(cap_request)
-    return [v['name'] for v in capabilities.get('variables')] or ['all']
+    return [v['name'] for v in capabilities.get('variables') or []] or ['all']
