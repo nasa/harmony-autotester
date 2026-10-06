@@ -4,6 +4,19 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.5.1] - 2026-10-06
+
+### Changed:
+
+- Switched smap-l2-gridder tests to use `concept_id` when grabbing granules for
+  the test.
+
+### Fixed:
+
+- Updated `umm_g_utilities.py` `get_bounding_box` to fail in a way that is
+  captured by the test output when the granule has no spatial information
+  associated with it.
+
 ## [v1.5.0] - 2026-10-01
 
 ### Added:
