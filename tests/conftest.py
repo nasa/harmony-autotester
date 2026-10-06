@@ -160,8 +160,9 @@ def get_configured_variable_names(
     """Get the name of the configured variables for the collection.
 
     Calls Harmony's capabilities endpont for the collection and returns a list
-    of all configured variable names.
+    of all configured variable names. If the collection has no configured variables,
+    returns ['all'], so a request made with the result will ask all variables.
     """
     cap_request = CapabilitiesRequest(collection_id=collection_id)
     capabilities = harmony_client.submit(cap_request)
-    return [v['name'] for v in capabilities.get('variables')]
+    return [v['name'] for v in capabilities.get('variables') or []] or ['all']
