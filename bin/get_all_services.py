@@ -148,6 +148,8 @@ def get_service_collections(
             error_count += 1
             print(f'response status code: f{cmr_graph_response.status_code}')
             print(f'response : {cmr_graph_response.content}')
+            if error_count == max_errors:
+                cmr_graph_response.raise_for_status()
 
     return collections
 
@@ -235,6 +237,8 @@ def get_all_harmony_services(
             error_count += 1
             print(f'response status code: f{cmr_graph_response.status_code}')
             print(f'response : {cmr_graph_response.content}')
+            if error_count == max_errors:
+                cmr_graph_response.raise_for_status()
 
     # Return list that also contains information on all collections associated
     # with each service:
