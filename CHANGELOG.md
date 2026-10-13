@@ -4,6 +4,15 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.6.0] - 2026-10-13
+
+### Added:
+
+- DAS-2515 - Adds tests for the `sds/HOSS-projection-gridded` service chain in
+  production and UAT. Similar to [v1.5.0], for each associated collection, a granule
+  is requested with a variable and bounding box subset, which calls HOSS and MaskFill,
+  and checks the request is successful.
+
 ## [v1.5.0] - 2026-10-01
 
 ### Added:
@@ -85,7 +94,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.6.0...HEAD
+[v1.6.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.0
 [v1.5.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.5.0
 [v1.4.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.4.0
 [v1.3.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.3.0

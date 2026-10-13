@@ -1,5 +1,6 @@
 {
   "S1240682712-EEDTEST": "tests/hoss_geographic",
+  "S1245117629-EEDTEST": "tests/hoss_projection_gridded",
   "S1257776354-EEDTEST": "tests/hybig",
   "S1262025641-LARC_CLOUD": "tests/sambah",
   "S1268612173-POCLOUD": "tests/net2cog",
