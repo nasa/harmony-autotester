@@ -11,31 +11,32 @@ def test_smap_l2_subsetter_net2cog(
     failed_tests, harmony_client, service_collection, earthaccess_login
 ):
     """Run a sample request against the service_collection."""
-    # Get some CMR umm-g metadata information.
-    granules = earthaccess.search_data(
-        short_name=service_collection['short_name'],
-        version=service_collection['version'],
-        count=1,
-    )
-
-    # Create a very small bounding box 25% of the full area.
-    west, east, south, north = generate_partial_spatial_box(granules, 25.0)
-    spatial_limit = BBox(west, south, east, north)
-
-    # Get a list of variables and choose the first 2. (or 1 if there's only 1)
-    variables = get_configured_variable_names(
-        harmony_client, service_collection['concept_id']
-    )[0:2]
-
-    harmony_request = AutotesterRequest(
-        collection=Collection(id=service_collection['concept_id']),
-        spatial=spatial_limit,
-        variables=variables,
-        format='image/tiff',
-        max_results=1,
-    )
-
     try:
+        harmony_request = None
+
+        # Get some CMR umm-g metadata information.
+        granules = earthaccess.search_data(
+            collection_concept_id=service_collection['concept_id'], count=1
+        )
+        assert granules, 'The collection has no granules'
+
+        # Create a very small bounding box 25% of the full area.
+        west, east, south, north = generate_partial_spatial_box(granules, 25.0)
+        spatial_limit = BBox(west, south, east, north)
+
+        # Get a list of variables and choose the first 2. (or 1 if there's only 1)
+        variables = get_configured_variable_names(
+            harmony_client, service_collection['concept_id']
+        )[0:2]
+
+        harmony_request = AutotesterRequest(
+            collection=Collection(id=service_collection['concept_id']),
+            spatial=spatial_limit,
+            variables=variables,
+            format='image/tiff',
+            max_results=1,
+        )
+
         # Submit the job and get the JSON output once completed
         harmony_job_id = harmony_client.submit(harmony_request)
         result_json = harmony_client.result_json(harmony_job_id)
@@ -49,11 +50,17 @@ def test_smap_l2_subsetter_net2cog(
         ensure_correct_files_created(result_json['links'], variables)
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
+        url = (
+            'NOT_APPLICABLE'
+            if harmony_request is None
+            else harmony_client.request_as_url(harmony_request)
+        )
+
         failed_tests.append(
             {
                 **service_collection,
                 'error': str(exception),
-                'url': harmony_client.request_as_url(harmony_request),
+                'url': url,
             }
         )
         raise

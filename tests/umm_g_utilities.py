@@ -31,12 +31,17 @@ def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, floa
         Adopted from l2ss-py-autotest:
         https://github.com/podaac/l2ss-py-autotest/blob/9243876/tests/verify_collection.py#L246
     """
+    geometry = (
+        granule['umm']
+        .get('SpatialExtent', {})
+        .get('HorizontalSpatialDomain', {})
+        .get('Geometry')
+    )
+    assert geometry, 'Granule has no horizontal spatial geometry'
+
     try:
         longitude_list: list[float] = []
         latitude_list: list[float] = []
-
-        spatial_extent = granule['umm']['SpatialExtent']
-        geometry = spatial_extent['HorizontalSpatialDomain']['Geometry']
 
         polygons = geometry.get('GPolygons')
         lines = geometry.get('Lines')
@@ -62,7 +67,9 @@ def get_bounding_box(granule: dict[str, Any]) -> tuple[float, float, float, floa
         east = max(longitude_list)
 
     except (KeyError, ValueError):
-        bounding_box = geometry['BoundingRectangles'][0]
+        bounding_rectangles = geometry.get('BoundingRectangles')
+        assert bounding_rectangles, 'Granule has no usable spatial geometry'
+        bounding_box = bounding_rectangles[0]
 
         north = bounding_box.get('NorthBoundingCoordinate')
         south = bounding_box.get('SouthBoundingCoordinate')

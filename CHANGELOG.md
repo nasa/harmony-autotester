@@ -4,6 +4,20 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+
+## [v1.6.1] - 2026-10-19
+
+### Changed:
+
+- Switched smap-l2-gridder tests to use `concept_id` when grabbing granules for
+  the test.
+
+### Fixed:
+
+- Updated `umm_g_utilities.py` `get_bounding_box` to fail in a way that is
+  captured by the test output when the granule has no spatial information
+  associated with it.
+
 ## [v1.6.0] - 2026-10-13
 
 ### Added:
@@ -12,6 +26,7 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
   production and UAT. Similar to [v1.5.0], for each associated collection, a granule
   is requested with a variable and bounding box subset, which calls HOSS and MaskFill,
   and checks the request is successful.
+
 
 ## [v1.5.0] - 2026-10-01
 
@@ -94,7 +109,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.6.1...HEAD
+[v1.6.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.1
 [v1.6.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.0
 [v1.5.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.5.0
 [v1.4.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.4.0
