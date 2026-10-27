@@ -4,6 +4,13 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.7.0] - 2026-10-27
+
+### Added:
+
+- DAS-2516 - Adds tests for the `sds/HOSS-regridder-reformatter` service chain
+  in production and UAT. All variables are requested in these test; net2cog
+  will only converts compatible variables.
 
 ## [v1.6.1] - 2026-10-19
 
@@ -87,7 +94,7 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-570 - Added tests for the [net2cog service](https://github.com/podaac/net2cog).
   These tests will ensure a request returns a successful status for a collection,
   and then check that all output files have the expected suffix on their output
-  names: `_reformatted.tif`.
+  names: `_reformatted.tif`. Failure messages include the URL of the Harmony job.
 
 ## [v1.1.0] - 2025-05-01
 
@@ -109,7 +116,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.6.1...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.7.0...HEAD
+[v1.7.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.7.0
 [v1.6.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.1
 [v1.6.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.0
 [v1.5.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.5.0
