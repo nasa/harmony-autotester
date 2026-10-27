@@ -10,7 +10,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - DAS-2516 - Adds tests for the `sds/HOSS-regridder-reformatter` service chain
   in production and UAT. All variables are requested in these test; net2cog
-  will only converts compatible variables.
+  will only converts compatible variables. Failure messages include the URL
+  of the Harmony job.
 
 ## [v1.6.1] - 2026-10-19
 
@@ -94,7 +95,7 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-570 - Added tests for the [net2cog service](https://github.com/podaac/net2cog).
   These tests will ensure a request returns a successful status for a collection,
   and then check that all output files have the expected suffix on their output
-  names: `_reformatted.tif`. Failure messages include the URL of the Harmony job.
+  names: `_reformatted.tif`.
 
 ## [v1.1.0] - 2025-05-01
 
