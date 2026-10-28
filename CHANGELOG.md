@@ -4,6 +4,13 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.7.0] - 2026-10-27
+
+### Added:
+
+- DAS-2516 - Adds tests for the `sds/HOSS-regridder-reformatter` service chain
+  in production and UAT. All variables are requested in these tests; net2cog
+  converts only compatible variables.
 
 ## [v1.6.1] - 2026-10-19
 
@@ -109,7 +116,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.6.1...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.7.0...HEAD
+[v1.7.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.7.0
 [v1.6.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.1
 [v1.6.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.0
 [v1.5.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.5.0
