@@ -9,9 +9,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added:
 
 - DAS-2516 - Adds tests for the `sds/HOSS-regridder-reformatter` service chain
-  in production and UAT. All variables are requested in these test; net2cog
-  will only converts compatible variables. Failure messages include the URL
-  of the Harmony job.
+  in production and UAT. All variables are requested in these tests; net2cog
+  converts only compatible variables.
 
 ## [v1.6.1] - 2026-10-19
 

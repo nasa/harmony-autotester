@@ -36,18 +36,15 @@ def test_hoss_regridder_reformatter(
 
         # Submit the job and get the JSON output once completed
         harmony_job_id = harmony_client.submit(harmony_request)
-        job_url = f'{harmony_client.config.root_url}/jobs/{harmony_job_id}'
         result_json = harmony_client.result_json(harmony_job_id)
 
         # Check the response was successful
         assert result_json['status'] == 'successful', (
-            f'Harmony request failed (job: {job_url}):\n\n{result_json["message"]}'
+            f'Harmony request failed:\n\n{result_json["message"]}'
         )
 
         # Check the URLs for results are all of the expected type.
-        ensure_correct_files_created(
-            result_json['links'], result_json['message'], job_url
-        )
+        ensure_correct_files_created(result_json['links'], result_json['message'])
     except AssertionError as exception:
         # Cache error message and re-raise the AssertionError to fail the test
         url = (
@@ -73,9 +70,7 @@ def test_hoss_regridder_reformatter(
         raise AssertionError('Unexpected request failure') from exception
 
 
-def ensure_correct_files_created(
-    harmony_result_json_links: list[dict], message: str, job_url: str
-):
+def ensure_correct_files_created(harmony_result_json_links: list[dict], message: str):
     """Check the output files.
 
     net2cog writes one GeoTIFF per converted variable, each with the
@@ -84,10 +79,8 @@ def ensure_correct_files_created(
 
     """
     data_links = [link for link in harmony_result_json_links if link['rel'] == 'data']
-    assert data_links, (
-        f'Expected at least 1 GeoTIFF output file (job: {job_url}):\n\n{message}'
-    )
+    assert data_links, f'Expected at least 1 GeoTIFF output file:\n\n{message}'
 
     assert all(link['href'].endswith('_reformatted.tif') for link in data_links), (
-        f'Not all data links are reformatted GeoTIFF files (job: {job_url})'
+        'Not all data links are reformatted GeoTIFF files'
     )
