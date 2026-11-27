@@ -4,6 +4,14 @@ The Harmony Autotester follows semantic versioning. All notable changes to this
 project will be documented in this file. The format is based on [Keep a
 Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [v1.9.0] - 2026-11-27
+
+### Added:
+
+- DAS-2520 - Adds tests for the `variable-only-opendap-subsetter` service chain in PROD and UAT.
+  Up to two configured variables are requested with NetCDF-4 output. Collections with no configured
+  variables are requested with OPeNDAP URL output.
+
 ## [v1.8.0] - 2026-11-17
 
 ### Added:
@@ -123,7 +131,8 @@ Changelog](http://keepachangelog.com/en/1.0.0/).
 - TRT-628 - Implemented scaffolding to invoke all defined test suites.
 - TRT-629 - Implemented GitHub issue publication for failures.
 
-[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.8.0...HEAD
+[Unreleased]: https://github.com/nasa/harmony-autotester/compare/1.9.0...HEAD
+[v1.9.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.9.0
 [v1.8.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.8.0
 [v1.7.0]: https://github.com/nasa/harmony-autotester/releases/tag/1.7.0
 [v1.6.1]: https://github.com/nasa/harmony-autotester/releases/tag/1.6.1
